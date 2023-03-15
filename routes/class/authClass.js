@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-router.post('/authClass', async function(req, res) {
+router.post('/auth', async function(req, res) {
     try {
         const classId = req.body.classId;
         const username = req.body.username;

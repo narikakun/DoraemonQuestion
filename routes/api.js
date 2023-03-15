@@ -7,5 +7,6 @@ router.use("/class", require("./class/createClass"));
 router.use("/class", require("./class/authClass"));
 
 router.use("/board", require("./board/boardList"));
+router.use("/board", require("./board/createBoard"));
 
 module.exports = router;

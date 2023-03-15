@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-router.post('/createClass', async function(req, res) {
+router.post('/create', async function(req, res) {
     try {
         const classId = req.body.classId;
         const tPassword = req.body.tPassword; // 教師用パスワードの入力

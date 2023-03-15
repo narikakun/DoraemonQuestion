@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const multer = require("multer");
+const fs = require("fs");
 const upload = multer({
     dest: "uploads/",
     fileFilter(req, file, callback) {
@@ -10,7 +11,11 @@ const upload = multer({
         }
         callback(new TypeError("Invalid File Type"));
     },
-    limits: { fileSize: 5 }
+    limits: { fileSize: 3000000 }, // 3000000(B) -> 3MB
+    onFileSizeLimit: function (file) {
+        console.log('Failed: ', file.originalname);
+        fs.unlink('./uploads/' + file.path);
+    }
 });
 
 router.post('/:classId/create', upload.array("files"), async function(req, res) {
@@ -34,13 +39,13 @@ router.post('/:classId/create', upload.array("files"), async function(req, res) 
         const postContent = req.body.content;
         const boardListCollection = res.app.locals.db.collection("boardList");
         let files = [];
-        for (const file of req.files) {
+        for (const file in req.files) {
             files.push({
-                name: file.originalname,
-                mimetype: file.mimetype,
-                id: file.filename,
-                path: file.path,
-                size: file.size
+                name: req.files[file].originalname,
+                mimetype: req.files[file].mimetype,
+                id: req.files[file].filename,
+                path: req.files[file].path,
+                size: req.files[file].size
             })
         }
         let boardData = {

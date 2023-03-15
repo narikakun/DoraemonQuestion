@@ -15,7 +15,13 @@ router.get('/:classId/list', async function(req, res) {
 
         const boardListCollection = res.app.locals.db.collection("boardList");
         const classBoardCollection = await boardListCollection.findOne({ classId : classId });
-        let pageNumber = req.body.page || 0;
+        let pageNumber = Number(req.query.page) || 1;
+        if (pageNumber < 1) {
+            res.status(400).json({
+                msg: "ページ数の指定は１以上の必要があります。"
+            });
+            return;
+        }
         if (!classBoardCollection) {
             res.status(200).json({
                 msg: "取得しました。",
@@ -27,12 +33,12 @@ router.get('/:classId/list', async function(req, res) {
             });
             return;
         }
-        const boardCount = classBoardCollection.countDocuments();
+        const boardCount = await boardListCollection.countDocuments();
         let boardList = [];
 
-        let boardFind = classBoardCollection.find(Document.init(),  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)});
-        for (const boardFindElement of boardFind) {
-            boardList.push(boardFindElement);
+        let boardFind = await boardListCollection.find({ classId: classId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).toArray();
+        for (const boardKey in boardFind) {
+            boardList.push(boardFind[boardKey]);
         }
         res.status(200).json({
             msg: "取得しました。",
