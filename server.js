@@ -16,10 +16,7 @@ app.use(cookieParser());
 app.use(log4js.connectLogger(log4js.getLogger('express'), {}));
 
 app.set('view engine', 'ejs');
-
-app.get('/', function(req, res) {
-    res.render('pages/index');
-});
+app.use("/", require("./views/views"));
 
 connectDB();
 app.locals.logger = logger;

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <%- include('../partials/head'); %>
+        <title>クラス作成 | <%= process.env.ServiceName %></title>
+        <script src="/js/tCreate.js"></script>
+    </head>
+    <body>
+        <header>
+            <%- include('../partials/header'); %>
+        </header>
+        <main class="container">
+            <h1>クラス作成</h1>
+            <p>これは教員向けの機能です。</p>
+            <hr class="my-4">
+            <div class="mb-3">
+                <label for="classId" class="form-label">クラスID</label>
+                <input type="text" class="form-control" id="classId" placeholder="クラスID" aria-describedby="classIdHelp" required>
+                <div id="classIdHelp" class="form-text">生徒がクラスにログインするために使用します。</div>
+                <div class="invalid-feedback">
+                    クラスIDの指定は必須です。
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="adminPassword" class="form-label">管理画面パスワード</label>
+                <input type="password" class="form-control" id="adminPassword" placeholder="Password1234" aria-describedby="adminPasswordHelp" required>
+                <div id="adminPasswordHelp" class="form-text">生徒が送ってきた質問に回答するための管理画面にログインするために使用します。忘れた場合はログインできなくなります。</div>
+                <div class="invalid-feedback">
+                    管理画面パスワードの入力は必須です。
+                </div>
+            </div>
+            <button type="button" id="createClassButton" class="btn btn-primary">作成</button>
+        </main>
+        <footer class="fixed-bottom">
+            <%- include('../partials/footer'); %>
+        </footer>
+    </body>
+</html>
