@@ -4,14 +4,15 @@ const app = express();
 const log4js = require('log4js')
 const logger = log4js.getLogger("default");
 logger.level = 'ALL';
-const bodyParser = require('body-parser');
 const {MongoClient} = require("mongodb");
+const cookieParser = require('cookie-parser')
 
 const server = app.listen(3000, function(){
     logger.info(`Expressで起動しました。 ポート番号: ${server.address().port}`);
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended:true}));
+app.use(cookieParser());
 app.use(log4js.connectLogger(log4js.getLogger('express'), {}));
 
 app.get("/", (req, res) => {
@@ -19,17 +20,17 @@ app.get("/", (req, res) => {
 });
 
 connectDB();
-app.use("/api", require("./routes/class.js"));
+app.locals.logger = logger;
+
+app.use("/api", require("./routes/api"));
 app.use(express.static('public'));
 
 async function connectDB () {
-    let dbClient;
     try {
-        dbClient = await MongoClient.connect(process.env.MongoDB);
-        app.locals.db = await dbClient.db("dQuestion");
+        let dbClient = await MongoClient.connect(process.env.MongoDB);
+        let db = await dbClient.db("dQuestion");
+        app.locals.db =  db;
     } catch (err) {
         console.log(err);
-    } finally {
-        if (dbClient) await dbClient.close();
     }
 }
