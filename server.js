@@ -15,8 +15,10 @@ app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use(log4js.connectLogger(log4js.getLogger('express'), {}));
 
-app.get("/", (req, res) => {
-    res.status(200).send("Hello World");
+app.set('view engine', 'ejs');
+
+app.get('/', function(req, res) {
+    res.render('pages/index');
 });
 
 connectDB();
