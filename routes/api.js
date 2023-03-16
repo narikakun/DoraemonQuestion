@@ -16,5 +16,6 @@ router.use("/class", require("./class/tAuthClass"));
 
 router.use("/board", require("./board/boardList"));
 router.use("/board", require("./board/createBoard"));
+router.use("/board", require("./board/boardImage"));
 
 module.exports = router;
