@@ -9,5 +9,8 @@ router.get('/tCreate', function(req, res) {
 router.get('/login', function(req, res) {
     res.render('pages/login');
 });
+router.get('/tLogin', function(req, res) {
+    res.render('pages/tLogin');
+});
 
 module.exports = router;
