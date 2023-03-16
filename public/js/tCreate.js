@@ -12,7 +12,7 @@ $(function(){
         })
             .done(function(data, textStatus, jqXHR){
                 $.cookie(`adminPass_${data.data._id}`, $('#adminPassword').val());
-                window.location.href = `/admin/${data.data._id}`
+                window.location.href = `/admin/${data.data.classId}`
             })
             .fail(function(jqXHR, textStatus, errorThrown){
                 $('#errorMsg').text(jqXHR.responseJSON.msg);
