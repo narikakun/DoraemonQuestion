@@ -8,13 +8,26 @@ function getBoard (classId, pageNum = 1) {
         contentType: 'application/json',
         dataType: "json"
     })
-        .done(function(data, textStatus, jqXHR){
+        .done(async function(data, textStatus, jqXHR){
             let cardHtml = "";
             for (const datum of data.boards) {
+                let thuImg = null;
+                if (datum.data.files) {
+                    let showMimeType = ["image/jpeg", "image/jpg", "image/png"];
+                    let images = datum.data.files.filter(f => showMimeType.includes(f.mimetype));
+                    console.log(images);
+                    if (images[0]) {
+                        let imgResult = await getImg(classId, datum._id);
+                        console.log(imgResult);
+                        if (imgResult.files[0]) {
+                            thuImg = imgResult.files[0].url;
+                        }
+                    }
+                }
                 cardHtml += `
                 <div class="col" id="board_${datum._id}">
                     <div class="card shadow-sm">
-                        <img class="bd-placeholder-img card-img-top" width="100%" src="https://cdn.discordapp.com/attachments/1070991874120237076/1071073977134481468/discord.png">
+                        <img class="bd-placeholder-img card-img-top" width="100%" src="${thuImg?thuImg:""}">
                         <div class="card-body">
                             <h5 class="card-title">${datum.author}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">${new Date(datum.createdAt).toLocaleString("ja")}</h6>
@@ -60,3 +73,21 @@ $(function() {
         getBoard(nowData.classId, pageNumber);
     })
 });
+
+async function getImg(classId, boardId) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `/api/board/${classId}/image/${boardId}`,
+            type: "GET",
+            async: true,
+        }).then(
+            function (result) {
+                resolve(result);
+            },
+            function () {
+                reject();
+            }
+        )
+        }
+    )
+}
