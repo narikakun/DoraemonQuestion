@@ -31,7 +31,6 @@ function getBoard (classId, pageNum = 1) {
             }
             $("#cardList").html(cardHtml);
             nowData = data;
-            console.log(data);
             if (data.pageNumber == 1) {
                 $("#paginationBack").addClass("disabled");
             } else {
