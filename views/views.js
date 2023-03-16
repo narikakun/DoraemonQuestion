@@ -6,5 +6,8 @@ router.get('/', function(req, res) {
 router.get('/tCreate', function(req, res) {
     res.render('pages/tCreate');
 });
+router.get('/login', function(req, res) {
+    res.render('pages/login');
+});
 
 module.exports = router;
