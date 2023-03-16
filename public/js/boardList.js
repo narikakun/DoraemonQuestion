@@ -15,10 +15,8 @@ function getBoard (classId, pageNum = 1) {
                 if (datum.data.files) {
                     let showMimeType = ["image/jpeg", "image/jpg", "image/png"];
                     let images = datum.data.files.filter(f => showMimeType.includes(f.mimetype));
-                    console.log(images);
                     if (images[0]) {
                         let imgResult = await getImg(classId, datum._id);
-                        console.log(imgResult);
                         if (imgResult.files[0]) {
                             thuImg = imgResult.files[0].url;
                         }
