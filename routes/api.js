@@ -12,6 +12,7 @@ router.use((err, req, res, next) => {
 
 router.use("/class", require("./class/createClass"));
 router.use("/class", require("./class/authClass"));
+router.use("/class", require("./class/tAuthClass"));
 
 router.use("/board", require("./board/boardList"));
 router.use("/board", require("./board/createBoard"));
