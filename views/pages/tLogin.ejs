@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <%- include('../partials/head'); %>
+    <title>教員用管理パネルログイン | <%= process.env.ServiceName %></title>
+    <script src="/js/tLogin.js"></script>
+</head>
+<body>
+<header>
+    <%- include('../partials/header'); %>
+</header>
+<main class="container">
+    <h1>教員用管理パネルログイン</h1>
+    <p>教員用のクラス管理パネルへのログイン画面です。</p>
+    <hr class="my-4">
+    <p id="errorMsg" style="color: red;"></p>
+    <div class="mb-3">
+        <label for="classId" class="form-label">クラスID</label>
+        <input type="text" class="form-control" id="classId" placeholder="クラスID" aria-describedby="classIdHelp" required>
+        <div id="classIdHelp" class="form-text">クラスIDを入力してください。</div>
+        <div class="invalid-feedback">
+            クラスIDの入力は必須です。
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="adminPassword" class="form-label">管理画面パスワード</label>
+        <input type="password" class="form-control" id="adminPassword" placeholder="Password1234" aria-describedby="adminPasswordHelp" required>
+        <div id="adminPasswordHelp" class="form-text">管理パネルログイン用のパスワードを入力してください。</div>
+        <div class="invalid-feedback">
+            管理画面パスワードの入力は必須です。
+        </div>
+    </div>
+    <button type="button" id="classAdminLoginButton" class="btn btn-primary">ログイン</button>
+</main>
+<footer class="fixed-bottom">
+    <%- include('../partials/footer'); %>
+</footer>
+</body>
+</html>
