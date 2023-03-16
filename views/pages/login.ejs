@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <%- include('../partials/head'); %>
+    <title>生徒ログイン | <%= process.env.ServiceName %></title>
+    <script src="/js/login.js"></script>
+</head>
+<body>
+<header>
+    <%- include('../partials/header'); %>
+</header>
+<main class="container">
+    <h1>生徒ログイン</h1>
+    <p>クラスへのログイン画面です。</p>
+    <hr class="my-4">
+    <p id="errorMsg" style="color: red;"></p>
+    <div class="mb-3">
+        <label for="classId" class="form-label">クラスID</label>
+        <input type="text" class="form-control" id="classId" placeholder="クラスID" aria-describedby="classIdHelp" required>
+        <div id="classIdHelp" class="form-text">先生から指示されたクラスIDを入力してください。</div>
+        <div class="invalid-feedback">
+            クラスIDの入力は必須です。
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="username" class="form-label">名前</label>
+        <input type="text" class="form-control" id="username" placeholder="田中 太郎" required>
+        <div class="invalid-feedback">
+            名前の入力は必須です。
+        </div>
+    </div>
+    <button type="button" id="classLoginButton" class="btn btn-primary">ログイン</button>
+</main>
+<footer class="fixed-bottom">
+    <%- include('../partials/footer'); %>
+</footer>
+</body>
+</html>
