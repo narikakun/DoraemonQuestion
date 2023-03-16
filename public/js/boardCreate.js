@@ -1,19 +1,13 @@
 $(function(){
     $("#createBoardButton").click(function(event){
         let fd = new FormData();
-        let file01 = $("#inputFile01").prop('files')[0];
-        if (file01) {
-            fd.append("files[]", file01);
+        for (let i = 1; i <= 3; i++) {
+            let file = $("#inputFile0"+i).prop('files')[0];
+            if (file) {
+                fd.append("files", file);
+            }
         }
-        let file02 = $("#inputFile02").prop('files')[0];
-        if (file02) {
-            fd.append("files[]", file02);
-        }
-        let file03 = $("#inputFile03").prop('files')[0];
-        if (file03) {
-            fd.append("files[]", file03);
-        }
-        let content = $("contentInput").val();
+        let content = $("#contentInput").val();
         if (content) {
             fd.append("content", content);
         }
@@ -27,7 +21,7 @@ $(function(){
             contentType: false,
         })
             .done(function(data, textStatus, jqXHR){
-                console.log(data);
+                window.location.href = `/class/${data.data.classId}/board/${data.data._id}`
             })
             .fail(function(jqXHR, textStatus, errorThrown){
                 $('#errorMsg').text(jqXHR.responseJSON.msg);
