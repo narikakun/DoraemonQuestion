@@ -11,7 +11,7 @@ router.get('/:classId/list', async function(req, res) {
             });
             return;
         }
-        let onePagePer = 20;
+        let onePagePer = 3;
 
         const boardListCollection = res.app.locals.db.collection("boardList");
         const classBoardCollection = await boardListCollection.findOne({ classId : classId });
@@ -36,7 +36,7 @@ router.get('/:classId/list', async function(req, res) {
         const boardCount = await boardListCollection.countDocuments();
         let boardList = [];
 
-        let boardFind = await boardListCollection.find({ classId: classId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).toArray();
+        let boardFind = await boardListCollection.find({ classId: classId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).sort( { createdAt: -1 } ).toArray();
         for (const boardKey in boardFind) {
             boardList.push(boardFind[boardKey]);
         }
@@ -46,7 +46,8 @@ router.get('/:classId/list', async function(req, res) {
             boards: boardList,
             maxPage: Math.ceil(boardCount/onePagePer),
             pageNumber: pageNumber,
-            boardCount: boardCount
+            boardCount: boardCount,
+            onePer: onePagePer
         });
     } catch (err) {
         console.error(err);

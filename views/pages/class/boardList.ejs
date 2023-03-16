@@ -13,22 +13,19 @@
         <h1>ボード画面</h1>
         <hr class="my-4">
         <p id="errorMsg" style="color: red;"></p>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            <div class="col">
-                <div class="card shadow-sm">
-                    <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="https://cdn.discordapp.com/attachments/1070991874120237076/1071073977134481468/discord.png">
-                    <div class="card-body">
-                        <p class="card-text">ここに内容</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <a class="btn btn-primary w-100" href="/class/<%= classId %>/create">ボートに新規投稿</a>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mt-3" id="cardList"></div>
+        <nav class="mt-3">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" id="paginationBack">
+                    <a class="page-link" tabindex="-1">＜</a>
+                </li>
+                <p id="paginationInfo" class="p-2"></p>
+                <li class="page-item" id="paginationNext">
+                    <a class="page-link">＞</a>
+                </li>
+            </ul>
+        </nav>
     </main>
 <footer class="fixed-bottom">
     <%- include('../../partials/footer'); %>
