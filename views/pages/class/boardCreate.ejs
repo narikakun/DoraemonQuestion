@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <%- include('../../partials/head'); %>
+    <title><%= classId %>のボードに新規 | <%= process.env.ServiceName %></title>
+    <script src="/js/boardCreate.js"></script>
+    <script>
+        const classId = "<%= classId %>";
+    </script>
+</head>
+<body>
+    <header>
+        <%- include('../../partials/header'); %>
+    </header>
+    <main class="container">
+        <h1>ボード新規作成</h1>
+        <hr class="my-4">
+        <p id="errorMsg" style="color: red;"></p>
+        <div class="mb-3">
+            <label for="contentInput" class="form-label">テキスト内容</label>
+            <textarea class="form-control" id="contentInput" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="formFileGroup" class="form-label">画像ファイル</label>
+            <div class="input-group mb-3" id="formFileGroup">
+                <input type="file" class="form-control" id="inputFile01">
+                <button class="btn btn-outline-secondary" type="button" id="removeInput01">取消</button>
+            </div>
+            <div class="input-group mb-3" id="formFileGroup">
+                <input type="file" class="form-control" id="inputFile02">
+                <button class="btn btn-outline-secondary" type="button" id="removeInput02">取消</button>
+            </div>
+            <div class="input-group mb-3" id="formFileGroup">
+                <input type="file" class="form-control" id="inputFile03">
+                <button class="btn btn-outline-secondary" type="button" id="removeInput03">取消</button>
+            </div>
+            <div id="fileHelp" class="form-text">png, jpg, pdfが利用できます。最大3つのファイルを選べます。各ファイルは5MBまでアップロードできます。</div>
+        </div>
+        <button type="button" id="createBoardButton" class="btn btn-primary">作成</button>
+    </main>
+<footer class="fixed-bottom">
+    <%- include('../../partials/footer'); %>
+</footer>
+</body>
+</html>
