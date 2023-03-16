@@ -19,5 +19,8 @@ router.get('/tLogin', function(req, res) {
 router.get('/class/:classId', function(req, res) {
     res.render('pages/class/boardList', { classId: req.params.classId });
 });
+router.get('/class/:classId/create', function(req, res) {
+    res.render('pages/class/boardCreate', { classId: req.params.classId });
+});
 
 module.exports = router;
