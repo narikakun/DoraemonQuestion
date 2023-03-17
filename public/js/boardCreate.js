@@ -1,5 +1,6 @@
 $(function(){
     $("#createBoardButton").click(function(event){
+        $("#loading-overlay").fadeIn(300);
         let fd = new FormData();
         for (let i = 1; i <= 3; i++) {
             let file = $("#inputFile0"+i).prop('files')[0];

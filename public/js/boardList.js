@@ -10,6 +10,7 @@ function getBoard (classId, pageNum = 1) {
     })
         .done(async function(data, textStatus, jqXHR){
             let cardHtml = "";
+            $("#loading-overlay").fadeOut(300);
             for (const datum of data.boards) {
                 let thuImg = null;
                 if (datum.data.files) {
@@ -55,6 +56,7 @@ function getBoard (classId, pageNum = 1) {
             $("#paginationInfo").text(`　${data.pageNumber} / ${data.maxPage}　`);
         })
         .fail(function(jqXHR, textStatus, errorThrown){
+            $("#loading-overlay").fadeOut(300);
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
 }

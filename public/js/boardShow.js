@@ -8,6 +8,7 @@ function getBoard (classId, boardId) {
         .done(async function(data, textStatus, jqXHR){
             $("#authorName").text(data.data.author);
             $("#content").text(data.data.data.content);
+            $("#loading-overlay").fadeOut(300);
             let imgHtml = "";
             let imgResult = [];
             if (data.data.data.files) {
@@ -26,6 +27,7 @@ function getBoard (classId, boardId) {
             $("#imgList").html(imgHtml);
         })
         .fail(function(jqXHR, textStatus, errorThrown){
+            $("#loading-overlay").fadeOut(300);
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
 }

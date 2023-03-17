@@ -1,5 +1,6 @@
 $(function(){
     $("#classAdminLoginButton").click(function(event){
+        $("#loading-overlay").fadeIn(300);
         $.ajax({
             type: "POST",
             url: "/api/class/teacherAuth",
@@ -14,6 +15,7 @@ $(function(){
                 window.location.href = `/admin/${data.classId}`
             })
             .fail(function(jqXHR, textStatus, errorThrown){
+                $("#loading-overlay").fadeOut(300);
                 $('#errorMsg').text(jqXHR.responseJSON.msg);
             });
     });

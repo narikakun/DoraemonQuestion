@@ -4,6 +4,7 @@ $(function(){
         $("#username").val(cookieUsername);
     }
     $("#classLoginButton").click(function(event){
+        $("#loading-overlay").fadeIn(300);
         $.ajax({
             type: "POST",
             url: "/api/class/auth",
@@ -18,6 +19,7 @@ $(function(){
                 window.location.href = `/class/${data.classId}`
             })
             .fail(function(jqXHR, textStatus, errorThrown){
+                $("#loading-overlay").fadeOut(300);
                 $('#errorMsg').text(jqXHR.responseJSON.msg);
             });
     });

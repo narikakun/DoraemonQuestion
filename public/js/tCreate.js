@@ -1,5 +1,6 @@
 $(function(){
     $("#createClassButton").click(function(event){
+        $("#loading-overlay").fadeIn(300);
         $.ajax({
             type: "POST",
             url: "/api/class/create",
@@ -15,6 +16,7 @@ $(function(){
                 window.location.href = `/admin/${data.data.classId}`
             })
             .fail(function(jqXHR, textStatus, errorThrown){
+                $("#loading-overlay").fadeOut(300);
                 $('#errorMsg').text(jqXHR.responseJSON.msg);
             });
     });
