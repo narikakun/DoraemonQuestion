@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <%- include('../../partials/head'); %>
+    <title><%= classId %>の中にあるボード | <%= process.env.ServiceName %></title>
+    <script src="/js/boardShow.js"></script>
+    <script>
+        const classId = "<%= classId %>";
+        const boardId = "<%= boardId %>";
+    </script>
+</head>
+<body>
+    <header>
+        <%- include('../../partials/header'); %>
+    </header>
+    <main class="container">
+        <h1>ボード閲覧</h1>
+        <hr class="my-4">
+        <p id="errorMsg" style="color: red;"></p>
+
+    </main>
+<footer class="fixed-bottom">
+    <%- include('../../partials/footer'); %>
+</footer>
+</body>
+</html>
