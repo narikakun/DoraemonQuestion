@@ -13,7 +13,7 @@ function getBoard (classId, pageNum = 1) {
             for (const datum of data.boards) {
                 let thuImg = null;
                 if (datum.data.files) {
-                    let showMimeType = ["image/jpeg", "image/jpg", "image/png"];
+                    let showMimeType = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
                     let images = datum.data.files.filter(f => showMimeType.includes(f.mimetype));
                     if (images[0]) {
                         let imgResult = await getImg(classId, datum._id);
@@ -29,7 +29,7 @@ function getBoard (classId, pageNum = 1) {
                         <div class="card-body">
                             <h5 class="card-title">${datum.author}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">${new Date(datum.createdAt).toLocaleString("ja")}</h6>
-                            <p class="card-text">${datum.data.content}</p>
+                            <p class="card-text">${datum.data.content||""}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
