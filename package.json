@@ -12,8 +12,6 @@
     "log4js": "^6.9.1",
     "mongodb": "^5.1.0",
     "multer": "^1.4.5-lts.1",
-    "multer-s3": "^3.0.1",
-    "pdf-to-png-converter": "^2.7.1",
-    "sqlite3": "^5.1.5"
+    "pdf-to-png-converter": "^2.7.1"
   }
 }

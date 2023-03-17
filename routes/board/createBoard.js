@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { S3Client } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand} = require('@aws-sdk/client-s3');
 const s3 = new S3Client({
     credentials: {
         accessKeyId: process.env.S3_accessKeyId,
@@ -10,10 +10,9 @@ const s3 = new S3Client({
 });
 
 const multer  = require('multer');
-const multerS3 = require('multer-s3');
 
-const crypto = require('crypto');
 const path = require("path");
+const fs = require("fs");
 
 const multerErrorHandler = (err, req, res, next) => {
     if (err) {
@@ -26,36 +25,13 @@ const multerErrorHandler = (err, req, res, next) => {
 };
 
 const upload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: 'files.nakn.jp',
-        location: '/dquestion',
-        metadata: function (req, file, cb) {
-            cb(null, {fieldName: file.fieldname});
-        },
-        key: function (req, file, cb) {
-            const newFileName = crypto.createHash('sha256').update(file.originalname).digest('hex');
-            const ext = path.extname(file.originalname).toLowerCase();
-            const fullPath = `${process.env.S3_path}/${new Date().getTime()}-${newFileName}${ext}`;
-            cb(null, fullPath);
-        },
-    }),
-    limits: { fileSize: 5000000 }, // In bytes: 5000000 bytes = 5 MB
-    fileFilter: function (req, file, cb) {
-        checkFileType(file, cb);
+    dest: 'uploads/',
+    limits: {
+        fieldSize: 5 * 1024 * 1024
     }
-});
+})
 
-function checkFileType (file, cb) {
-    const filetypes = /jpeg|jpg|png|pdf/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb('画像とPDF以外は許可されていません。');
-    }
-}
+const pdfToPng = require("pdf-to-png-converter");
 
 router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], async function(req, res) {
     try {
@@ -82,16 +58,78 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             });
             return;
         }
-        const boardListCollection = res.app.locals.db.collection("boardList");
-        let files = [];
-        for (const file in req.files) {
-            files.push({
-                name: req.files[file].originalname,
-                mimetype: req.files[file].mimetype,
-                key: req.files[file].key,
-                size: req.files[file].size
-            })
+        let s3Files = [];
+        for (const file of req.files) {
+            const filetypes = /jpeg|jpg|png|pdf/;
+            const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+            const mimetype = filetypes.test(file.mimetype);
+            if (!mimetype || !extname) {
+                res.status(400).json({
+                    msg: "画像とPDF以外はアップロードできません。"
+                });
+                return;
+            }
         }
+        for (const file of req.files) {
+            const ext = path.extname(file.originalname).toLowerCase();
+            let getFile = await fs.readFileSync(file.path);
+            let fileKey = `${process.env.S3_path}/${classId}/${new Date().getTime()}-${file.filename}${ext}`;
+            let pdfImages = null;
+            const start = console.time('my-timer');
+            if (file.mimetype == "application/pdf") {
+                const pngPages = await pdfToPng.pdfToPng(getFile, // The function accepts PDF file path or a Buffer
+                    {
+                        outputFileMask: file.filename,
+                        strictPagesToProcess: true,
+                        viewportScale: 2.0,
+                    });
+                pdfImages = [];
+                for (const pngPage of pngPages) {
+                    let pdfUpKey = `${process.env.S3_path}/${classId}/${new Date().getTime()}-${pngPage.name}`;
+                    let s3UpPdf = await s3.send(
+                        new PutObjectCommand({
+                            Bucket: process.env.S3_bucket,
+                            Key: pdfUpKey,
+                            Body: pngPage.content
+                        })
+                    );
+                    if (s3UpPdf["$metadata"].httpStatusCode != 200) {
+                        res.status(500).json({
+                            msg: "ファイルアップロード中にサーバーエラーが発生しました。"
+                        });
+                        return;
+                    }
+                    pdfImages.push(pdfUpKey);
+                }
+            }
+            const end = console.timeEnd('my-timer');
+            const result = { start, end };
+            console.log('console.time() : End', result);
+            let s3UpRes = await s3.send(
+                new PutObjectCommand({
+                    Bucket: process.env.S3_bucket,
+                    Key: fileKey,
+                    Body: getFile
+                })
+            );
+            if (s3UpRes["$metadata"].httpStatusCode != 200) {
+                res.status(500).json({
+                    msg: "ファイルアップロード中にサーバーエラーが発生しました。"
+                });
+                return;
+            }
+            let dbD = {
+                name: file.originalname,
+                mimetype: file.mimetype,
+                id: file.filename,
+                key: fileKey,
+                size: file.size,
+            };
+            if (pdfImages) dbD["pdf"] = pdfImages;
+            s3Files.push(dbD);
+        }
+        console.log(s3Files);
+        const boardListCollection = res.app.locals.db.collection("boardList");
         let boardData = {
             classId: classId,
             createdAt: new Date().getTime(),
@@ -99,7 +137,7 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             author: username,
             data: {
                 content: postContent,
-                files: files
+                files: s3Files
             }
         };
         await boardListCollection.insertOne(boardData);
