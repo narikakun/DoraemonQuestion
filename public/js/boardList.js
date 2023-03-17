@@ -24,7 +24,7 @@ function getBoard (classId, pageNum = 1) {
                 }
                 cardHtml += `
                 <div class="col" id="board_${datum._id}">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm card-link" onclick="window.location.href='/class/${datum.classId}/board/${datum._id}'">
                         <img class="bd-placeholder-img card-img-top" width="100%" src="${thuImg?thuImg:""}">
                         <div class="card-body">
                             <h5 class="card-title">${datum.author}</h5>
