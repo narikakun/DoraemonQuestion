@@ -17,10 +17,36 @@
         <h1>ボード閲覧</h1>
         <hr class="my-4">
         <p id="errorMsg" style="color: red;"></p>
-
+        <div class="p-2 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-1">
+                <h2 class="fw-bold" id="authorName"></h2>
+                <p class="col-md-8 fs-4" id="content"></p>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4" id="imgList"></div>
+            </div>
+        </div>
     </main>
+    <div class="modal fade" id="lightboxModalFullscreen" tabindex="-1" aria-labelledby="lightboxModalFullscreenLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" data-bs-dismiss="modal" aria-label="Close">
+            <div class="modal-content modal-content-lightbox">
+                <div class="modal-body d-flex align-self-center align-items-center justify-content-center">
+                    <img src="" class="img-fluid" id="LightboxCanvas" data-bs-dismiss="modal" aria-label="Close" width="100%" />
+                </div>
+            </div>
+        </div>
+    </div>
 <footer>
     <%- include('../../partials/footer'); %>
+    <script>
+        getBoard(classId, boardId)
+        let jsCardModal = document.getElementById('lightboxModalFullscreen');
+        jsCardModal.addEventListener('show.bs.modal', function (event) {
+            let button = event.relatedTarget;
+            let lightboximage = button.getAttribute('data-bs-lightbox');
+            if (lightboximage){
+                document.getElementById('LightboxCanvas').src = lightboximage;
+            }
+        })
+    </script>
 </footer>
 </body>
 </html>
