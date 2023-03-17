@@ -37,9 +37,11 @@ router.get('/:classId/image/:boardId', async function(req, res) {
         let filesBase64 = [];
         for (const img of images) {
             if (!img.key) continue;
+            let isPdf = false;
             if (img.pdf) {
                 if (img.pdf[0]) {
-                    img.key = img.pdf[0]
+                    img.key = img.pdf[0];
+                    isPdf = true;
                 }
             }
             let imgUrl = await getSignedUrl(
@@ -52,7 +54,8 @@ router.get('/:classId/image/:boardId', async function(req, res) {
             )
             filesBase64.push({
                 name: img.name,
-                url: imgUrl
+                url: imgUrl,
+                isPdf: isPdf
             })
         }
         res.status(200).json({
