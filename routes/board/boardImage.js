@@ -32,10 +32,16 @@ router.get('/:classId/image/:boardId', async function(req, res) {
                 return;
             }
         }
-        let showMimeType = ["image/jpeg", "image/jpg", "image/png"];
+        let showMimeType = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
         let images = boardObj.data.files.filter(f => showMimeType.includes(f.mimetype));
         let filesBase64 = [];
         for (const img of images) {
+            if (!img.key) continue;
+            if (img.pdf) {
+                if (img.pdf[0]) {
+                    img.key = img.pdf[0]
+                }
+            }
             let imgUrl = await getSignedUrl(
                 s3,
                 new GetObjectCommand({

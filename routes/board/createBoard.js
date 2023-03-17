@@ -69,28 +69,35 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
                 });
                 return;
             }
+            if (file.size > 5 * 1024 * 1024) {
+                res.status(400).json({
+                    msg: "ファイルサイズが上限を超えています。"
+                });
+                return;
+            }
         }
         for (const file of req.files) {
             const ext = path.extname(file.originalname).toLowerCase();
             let getFile = await fs.readFileSync(file.path);
             let fileKey = `${process.env.S3_path}/${classId}/${new Date().getTime()}-${file.filename}${ext}`;
             let pdfImages = null;
-            const start = console.time('my-timer');
             if (file.mimetype == "application/pdf") {
-                const pngPages = await pdfToPng.pdfToPng(getFile, // The function accepts PDF file path or a Buffer
+                const pngPages = await pdfToPng.pdfToPng(getFile,
                     {
                         outputFileMask: file.filename,
                         strictPagesToProcess: true,
                         viewportScale: 2.0,
                     });
                 pdfImages = [];
-                for (const pngPage of pngPages) {
-                    let pdfUpKey = `${process.env.S3_path}/${classId}/${new Date().getTime()}-${pngPage.name}`;
+                for (const pngPagesKey in pngPages) {
+                    if (pngPagesKey > 15) break;
+                    let pdfUpKey = `${process.env.S3_path}/${classId}/${new Date().getTime()}-${pngPages[pngPagesKey].name}`;
                     let s3UpPdf = await s3.send(
                         new PutObjectCommand({
                             Bucket: process.env.S3_bucket,
                             Key: pdfUpKey,
-                            Body: pngPage.content
+                            Body: pngPages[pngPagesKey].content,
+                            ContentType: "png"
                         })
                     );
                     if (s3UpPdf["$metadata"].httpStatusCode != 200) {
@@ -102,14 +109,12 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
                     pdfImages.push(pdfUpKey);
                 }
             }
-            const end = console.timeEnd('my-timer');
-            const result = { start, end };
-            console.log('console.time() : End', result);
             let s3UpRes = await s3.send(
                 new PutObjectCommand({
                     Bucket: process.env.S3_bucket,
                     Key: fileKey,
-                    Body: getFile
+                    Body: getFile,
+                    ContentType: file.mimetype
                 })
             );
             if (s3UpRes["$metadata"].httpStatusCode != 200) {
@@ -128,7 +133,6 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             if (pdfImages) dbD["pdf"] = pdfImages;
             s3Files.push(dbD);
         }
-        console.log(s3Files);
         const boardListCollection = res.app.locals.db.collection("boardList");
         let boardData = {
             classId: classId,
