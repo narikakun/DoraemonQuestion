@@ -18,5 +18,6 @@ router.use("/board", require("./board/boardList"));
 router.use("/board", require("./board/createBoard"));
 router.use("/board", require("./board/boardImage"));
 router.use("/board", require("./board/boardShow"));
+router.use("/board", require("./board/boardPdf"));
 
 module.exports = router;
