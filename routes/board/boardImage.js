@@ -38,9 +38,17 @@ router.get('/:classId/image/:boardId', async function(req, res) {
         for (const img of images) {
             if (!img.key) continue;
             let isPdf = false;
+            let pdfUrl = null;
             if (img.pdf) {
                 if (img.pdf[0]) {
-                    img.key = img.pdf[0];
+                    pdfUrl = await getSignedUrl(
+                        s3,
+                        new GetObjectCommand({
+                            Bucket: process.env.S3_bucket,
+                            Key: img.pdf[0]
+                        }),
+                        { expiresIn: 60*60*24 }
+                    )
                     isPdf = true;
                 }
             }
@@ -52,11 +60,16 @@ router.get('/:classId/image/:boardId', async function(req, res) {
                 }),
                 { expiresIn: 60*60*24 }
             )
-            filesBase64.push({
+            let fileD = {
                 name: img.name,
                 url: imgUrl,
                 isPdf: isPdf
-            })
+            };
+            if (pdfUrl) {
+                fileD["pdfUrl"] = fileD.url;
+                fileD["url"] = pdfUrl;
+            }
+            filesBase64.push(fileD);
         }
         res.status(200).json({
             msg: "取得しました。",
