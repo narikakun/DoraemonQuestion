@@ -48,7 +48,7 @@ router.get('/:classId/image/:boardId', async function(req, res) {
                     Bucket: process.env.S3_bucket,
                     Key: img.key
                 }),
-                { expiresIn: 60*10 }
+                { expiresIn: 60*60*24 }
             )
             filesBase64.push({
                 name: img.name,

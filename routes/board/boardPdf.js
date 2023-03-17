@@ -53,7 +53,7 @@ router.get('/:classId/pdf/:boardId/:fileNumber', async function(req, res) {
                     Bucket: process.env.S3_bucket,
                     Key: pdfKey
                 }),
-                { expiresIn: 60*10 }
+                { expiresIn: 60*60*24 }
             )
             filesBase64.push({
                 name: pdfKey,
