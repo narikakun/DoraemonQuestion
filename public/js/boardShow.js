@@ -26,10 +26,40 @@ function getBoard (classId, boardId) {
                             <div class="card-body">
                                 <p class="card-text">${img.name}</p>
                             </div>
-                        </div>
-                    </div>`;
+                        </div>`;
+                if ($.cookie(`adminPass_${classId}`)) {
+                    imgHtml += `
+                        <div class="card shadow-sm mt-2">
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <a href="${img.url}" download="${img.name}" target="_blank" class="btn btn-sm btn-outline-secondary">画像をダウンロード</a>
+                                    ${img.isPdf?`<a href="${img.pdfUrl}" download="${img.name}" target="_blank" class="btn btn-sm btn-outline-secondary mx-3">PDFをダウンロード</a>`:""}
+                                </div>
+                            </div>
+                        </div>`;
+                }
+                imgHtml += `</div>`;
             }
             $("#imgList").html(imgHtml);
+            if ($.cookie(`adminPass_${classId}`) || data.data.author == $.cookie('username')) {
+                $("#replyBox").html(`<div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">内容</label>
+                            <textarea class="form-control" id="contentInput" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="formFileGroup" class="form-label">画像ファイル</label>
+                            <div class="input-group mb-3" id="formFileGroup">
+                                <input type="file" class="form-control" id="inputFile01">
+                                <button class="btn btn-outline-secondary" type="button" id="removeInput01">取消</button>
+                            </div>
+                            <div id="fileHelp" class="form-text">png, jpg, pdfが利用できます。ファイルは5MBまでアップロードできます。</div>
+                        </div>
+                        <button type="button" class="btn btn-primary">ボードの中に投稿する</button>
+                    </div>
+                </div>`);
+            }
         })
         .fail(function(jqXHR, textStatus, errorThrown){
             $("#loading-overlay").fadeOut(300);
