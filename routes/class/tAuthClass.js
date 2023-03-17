@@ -12,9 +12,8 @@ router.post('/teacherAuth', async function(req, res) {
         }
         const collection = res.app.locals.db.collection("classList");
         const classObj = await collection.findOne({ classId : classId, tPassword: tPassword});
-        console.log(classObj);
         if (classObj) {
-            res.cookie(`adminPass_${classObj._id}`, tPassword);
+            res.cookie(`adminPass_${classObj.classId}`, tPassword);
             res.status(200).json({
                 msg: "ログインに成功しました。",
                 classId: classId
