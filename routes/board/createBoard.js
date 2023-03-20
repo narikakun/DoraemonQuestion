@@ -52,7 +52,7 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             return;
         }
         const postContent = req.body.content;
-        if (!postContent && !req.files) {
+        if (!postContent || !req.files) {
             res.status(400).json({
                 msg: "データが一つも入力されていません。"
             });
