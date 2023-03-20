@@ -25,6 +25,7 @@
             </div>
         </div>
         <div id="replyBox"></div>
+        <div id="replyList"></div>
     </main>
     <div class="modal fade" id="lightboxModal" tabindex="-1" aria-labelledby="lightboxModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl" data-bs-dismiss="modal" aria-label="Close">
@@ -36,8 +37,6 @@
 <footer>
     <%- include('../../partials/footer'); %>
     <script>
-        getBoard(classId, boardId)
-
         function showModal (imgUrls) {
             let imgHtml = "";
             for (const url of imgUrls) {
