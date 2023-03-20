@@ -20,4 +20,7 @@ router.use("/board", require("./board/boardImage"));
 router.use("/board", require("./board/boardShow"));
 router.use("/board", require("./board/boardPdf"));
 
+router.use("/comment", require("./comment/commentList"));
+router.use("/comment", require("./comment/commentPost"));
+
 module.exports = router;
