@@ -22,5 +22,7 @@ router.use("/board", require("./board/boardPdf"));
 
 router.use("/comment", require("./comment/commentList"));
 router.use("/comment", require("./comment/commentPost"));
+router.use("/comment", require("./comment/commentImage"));
+router.use("/comment", require("./comment/commentPdf"));
 
 module.exports = router;
