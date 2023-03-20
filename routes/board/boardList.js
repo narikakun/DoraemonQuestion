@@ -34,7 +34,7 @@ router.get('/:classId/list', async function(req, res) {
             });
             return;
         }
-        const boardCount = await boardListCollection.countDocuments({ boardId : boardId });
+        const boardCount = await boardListCollection.countDocuments({ classId : classId });
         let boardList = [];
 
         let boardFind = await boardListCollection.find({ classId: classId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).sort( { createdAt: -1 } ).toArray();
