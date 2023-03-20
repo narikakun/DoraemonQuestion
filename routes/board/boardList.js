@@ -29,7 +29,8 @@ router.get('/:classId/list', async function(req, res) {
                 boards: [],
                 maxPage: 0,
                 pageNumber: pageNumber,
-                boardCount: 0
+                boardCount: 0,
+                onePer: onePagePer
             });
             return;
         }
