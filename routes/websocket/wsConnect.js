@@ -1,37 +1,32 @@
-const router = require("express").Router();
-const expressWs = require('express-ws')(router);
+const express = require("express");
+const expressWs = require('express-ws')
+const router = express.Router()
+expressWs(router);
+const crypto = require("crypto");
 
-router.ws('/connect', async (ws, req) => {
+router.ws('/connect/:classId', async (ws, req) => {
     try {
         const classId = req.params.classId;
-        const collection = res.app.locals.db.collection("classList");
+        const collection = req.app.locals.db.collection("classList");
         const classObj = await collection.findOne({ classId : classId});
         if (!classObj) {
-            ws.send("クラスIDが見つかりませんでした。");
-            ws.destroy();
+            ws.send(JSON.stringify({ type: "error", msg: "クラスIDが違います。" }));
+            req.destroy();
             return;
         }
-        ws.send('接続成功')
-        console.log('接続成功');
-        let interval
-        interval = setInterval(() => {
-            if (ws.readyState === ws.OPEN) {
-                console.log('test')
-                ws.send(Math.random().toFixed(2))
-                ws.send('test')
-            } else {
-                clearInterval(interval)
-            }
-        }, 1000)
-
-        ws.on('message', msg => {
-            ws.send(msg)
-            console.log(msg)
-        })
+        let connectId = crypto.randomUUID();
+        if (!req.app.locals.wsList[classId]) req.app.locals.wsList[classId] = {};
+        req.app.locals.wsList[classId][connectId] = ws;
+        ws.send(JSON.stringify({ type: "connect", classId: classId, connectId: connectId }));
+        req.app.locals.logger.info(`WebSocket Connect ${req.socket.remoteAddress} : ${classId} : ${connectId} : ${Object.keys(req.app.locals.wsList[classId]).length}`);
+        ws.on('close', function close() {
+           delete req.app.locals.wsList[classId][connectId];
+            req.app.locals.logger.info(`WebSocket Disconnect ${req.socket.remoteAddress} : ${classId} : ${connectId} : ${Object.keys(req.app.locals.wsList[classId]).length}`);
+        });
     } catch (err) {
         console.error(err);
         ws.send("エラーが発生しました。");
-        ws.destroy();
+        req.destroy();
         return;
     }
 });

@@ -152,6 +152,9 @@ router.post('/:boardId/post', [upload.array("files", 1), multerErrorHandler], as
             msg: "コメントを新規作成しました。",
             data: commentData
         });
+        for (const wsId of Object.keys(req.app.locals.wsList[boardObj.classId])) {
+            req.app.locals.wsList[boardObj.classId][wsId].send(JSON.stringify({ type: "postComment", data: commentData }));
+        }
     } catch (err) {
         console.error(err);
         res.status(500).json({

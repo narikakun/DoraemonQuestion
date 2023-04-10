@@ -149,6 +149,9 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             msg: "ボードを新規作成しました。",
             data: boardData
         });
+        for (const wsId of Object.keys(req.app.locals.wsList[classId])) {
+            req.app.locals.wsList[classId][wsId].send(JSON.stringify({ type: "createBoard", data: boardData }));
+        }
     } catch (err) {
         console.error(err);
         res.status(500).json({

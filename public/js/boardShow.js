@@ -151,6 +151,7 @@ $(function() {
                             </div>`;
                     }
                     $("#replyList").html(replyBoxHtml);
+                    await connectWebSocket(classId);
                 })
                 .fail(function(jqXHR, textStatus, errorThrown){
                     $('#errorMsg').text(jqXHR.responseJSON.msg);
@@ -246,4 +247,27 @@ async function getCmtPdf(commentId, key) {
             )
         }
     )
+}
+
+
+async function connectWebSocket (classId) {
+    let connection = new WebSocket(`ws://localhost:3000/ws/connect/${classId}`);
+
+    connection.onopen = function(event) {
+        console.log(`connect`, event.data);
+    };
+
+    connection.onerror = function(error) {
+        alert("エラーが発生しました。");
+        console.error(error);
+    };
+
+    connection.onmessage = function(event) {
+        console.log("message", event.data);
+    };
+
+    connection.onclose = function() {
+        alert("サーバーから切断されました。再接続します。");
+        setTimeout(() => { connectWebSocket(); }, 5000);
+    };
 }
