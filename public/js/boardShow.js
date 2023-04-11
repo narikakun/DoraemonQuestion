@@ -7,7 +7,7 @@ $(function() {
     })
         .done(async function(data, textStatus, jqXHR){
             $("#authorName").text(data.data.author);
-            $("#content").text(data.data.data.content);
+            $("#content").html(data.data.data.content ? data.data.data.content.replace(/\r\n/g, '<br />') : "");
             $("#loading-overlay").fadeOut(300);
             let imgHtml = "";
             let imgResult = [];
@@ -136,7 +136,7 @@ async function addComment (comment) {
                     <div class="col-md-8">
                         <div class="card-body">
                             <h5 class="card-title">${comment.author}</h5>
-                            <p class="card-text">${comment.data.content || ""}</p>
+                            <p class="card-text">${comment.data.content ? comment.data.content.replace(/\r\n/g, '<br />') : ""}</p>
                             <p class="card-text"><small class="text-muted">${new Date(comment.createdAt).toLocaleString("ja")}</small></p>
                         </div>
                     </div>

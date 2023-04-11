@@ -14,6 +14,7 @@ function getBoard (classId, pageNum = 1) {
                 await addBoard(datum);
             }
             nowData = data;
+            await connectWebSocket(classId);
             if (data.pageNumber == 1) {
                 $("#paginationBack").addClass("disabled");
             } else {
@@ -35,8 +36,8 @@ function getBoard (classId, pageNum = 1) {
 async function addBoard (board) {
     let boardHtml = "";
     boardHtml += `
-<div class="col" id="board_${board._id}">
-    <div class="card mb-3 card-link" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
+<div class="col d-flex" id="board_${board._id}">
+    <div class="card mb-3 card-link flex-grow-1" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0">${board.author}</h5>
@@ -58,9 +59,32 @@ async function addBoard (board) {
     boardHtml += `
             </div>
         </div>
+        <div id="board_comment_${board._id}">
+        </div>
     </div>
 </div>`;
     $("#cardList").html(boardHtml + $("#cardList").html());
+    $('#cardList .card').matchHeight();
+    $.ajax({
+        type: "GET",
+        url: `/api/comment/${board._id}/list`,
+        contentType: 'application/json',
+        dataType: "json"
+    })
+        .done(async function(commentData, textStatus, jqXHR){
+            if (commentData.comments[0]) {
+                let comment = commentData.comments[0];
+                $(`#board_comment_${board._id}`).html(`<div class="card-footer">
+                    <div class="comment d-flex justify-content-between align-items-center">
+                        <span><strong>${comment.author}</strong> ${truncateString(comment.data.content, 15) || ""}</span>
+                        <span class="badge bg-secondary"><span id="board_comment_${board._id}_commentCounter">${commentData.commentCount}</span> コメント</span>
+                    </div>`);
+                $('#cardList .card').matchHeight();
+            }
+        })
+        .fail(function(jqXHR, textStatus, errorThrown){
+            $('#errorMsg').text(jqXHR.responseJSON.msg);
+        });
 }
 
 $(function() {
@@ -97,22 +121,36 @@ async function getImg(classId, boardId) {
 async function connectWebSocket (classId) {
     let connection = new WebSocket(`ws://localhost:3000/ws/connect/${classId}`);
 
-    connection.onopen = function(event) {
-        console.log(`connect`, event.data);
-    };
-
-    connection.onerror = function(error) {
-        alert("エラーが発生しました。");
-        console.error(error);
-    };
-
     connection.onmessage = function(event) {
-        console.log("message", event.data);
+        let getWsData = JSON.parse(event.data);
+        console.log(getWsData);
+        if (getWsData.type === "postComment") {
+            let boardElm = $(`#board_${getWsData.data.boardId}`);
+            if (!boardElm) return;
+            let boardComment = $(`#board_comment_${getWsData.data.boardId}`);
+            if (!boardComment) return;
+            boardElm.fadeOut('fast', function() {
+                let commentCounterC = $(`#board_comment_${getWsData.data.boardId}_commentCounter`);
+                let commentCount = 1;
+                if (commentCounterC) {
+                    commentCount = Number(commentCounterC.text()) + 1;
+                }
+                boardComment.html(`<div class="card-footer">
+                    <div class="comment d-flex justify-content-between align-items-center">
+                        <span><strong>${getWsData.data.author}</strong> ${truncateString(getWsData.data.data.content, 15) || ""}</span>
+                        <span class="badge bg-success" id="board_comment_${getWsData.data.boardId}_commentCounter">${commentCount} コメント</span>
+                    </div>`);
+                $('#cardList .card').matchHeight();
+                boardElm.fadeIn('fast');
+            });
+        } else if (getWsData.type === "createBoard") {
+            addBoard(getWsData.data);
+        }
     };
 
     connection.onclose = function() {
-        alert("サーバーから切断されました。再接続します。");
-        setTimeout(() => { connectWebSocket(); }, 5000);
+        bootstrap.showToast({ body: "サーバーから切断されました。再接続します。", toastClass: "text-bg-danger"})
+        setTimeout(() => { connectWebSocket(classId); }, 5000);
     };
 }
 
