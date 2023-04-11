@@ -9,33 +9,10 @@ function getBoard (classId, pageNum = 1) {
         dataType: "json"
     })
         .done(async function(data, textStatus, jqXHR){
-            let cardHtml = "";
             $("#loading-overlay").fadeOut(300);
-            for (const datum of data.boards) {
-                let thuImg = null;
-                if (datum.data.files) {
-                    let showMimeType = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
-                    let images = datum.data.files.filter(f => showMimeType.includes(f.mimetype));
-                    if (images[0]) {
-                        let imgResult = await getImg(classId, datum._id);
-                        if (imgResult.files[0]) {
-                            thuImg = imgResult.files[0].url;
-                        }
-                    }
-                }
-                cardHtml += `
-                <div class="col" id="board_${datum._id}">
-                    <div class="card shadow-sm card-link" onclick="window.location.href='/class/${datum.classId}/board/${datum._id}'">
-                        <img class="bd-placeholder-img card-img-top" width="100%" src="${thuImg?thuImg:""}">
-                        <div class="card-body">
-                            <h5 class="card-title">${datum.author}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">${new Date(datum.createdAt).toLocaleString("ja")}</h6>
-                            <p class="card-text">${datum.data.content||""}</p>
-                        </div>
-                    </div>
-                </div>`;
+            for (const datum of data.boards.reverse()) {
+                await addBoard(datum);
             }
-            $("#cardList").html(cardHtml);
             nowData = data;
             if (data.pageNumber == 1) {
                 $("#paginationBack").addClass("disabled");
@@ -53,6 +30,37 @@ function getBoard (classId, pageNum = 1) {
             $("#loading-overlay").fadeOut(300);
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
+}
+
+async function addBoard (board) {
+    let boardHtml = "";
+    boardHtml += `
+<div class="col" id="board_${board._id}">
+    <div class="card mb-3 card-link" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">${board.author}</h5>
+                <small class="text-muted">${new Date(board.createdAt).toLocaleString("ja")}</small>
+            </div>
+            <hr>
+            <p class="card-text">${truncateString(board.data.content, 70)||""}</p>
+            <div class="row row-cols-3 g-3">`;
+    if (board.data.files) {
+        let showMimeType = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
+        let images = board.data.files.filter(f => showMimeType.includes(f.mimetype));
+        if (images[0]) {
+            let imgResult = await getImg(board.classId, board._id);
+            for (const fileElm of imgResult.files) {
+                boardHtml += `<div class="col"><img src="${fileElm.url}" class="img-fluid"></div>`;
+            }
+        }
+    }
+    boardHtml += `
+            </div>
+        </div>
+    </div>
+</div>`;
+    $("#cardList").html(boardHtml + $("#cardList").html());
 }
 
 $(function() {
@@ -106,4 +114,10 @@ async function connectWebSocket (classId) {
         alert("サーバーから切断されました。再接続します。");
         setTimeout(() => { connectWebSocket(); }, 5000);
     };
+}
+
+function truncateString (str, maxLength) {
+    if (!str) return null;
+    if (str.length <= maxLength) return str;
+    return str.substring(0, maxLength - 3) + '...';
 }

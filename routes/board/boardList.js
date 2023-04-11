@@ -11,7 +11,7 @@ router.get('/:classId/list', async function(req, res) {
             });
             return;
         }
-        let onePagePer = 6;
+        let onePagePer = 20;
 
         const boardListCollection = res.app.locals.db.collection("boardList");
         const classBoardCollection = await boardListCollection.findOne({ classId : classId });
