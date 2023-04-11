@@ -85,7 +85,6 @@ $(function() {
                     })
                         .done(function (data, textStatus, jqXHR) {
                             $("#loading-overlay").fadeOut(300);
-                            console.log(data);
                             $("#contentInput").val("");
                             $("#inputFile01").val("");
                         })
@@ -106,51 +105,9 @@ $(function() {
                 dataType: "json"
             })
                 .done(async function(data, textStatus, jqXHR){
-                    console.log(data);
-                    let replyBoxHtml = "";
                     for (const comment of data.comments) {
-                        let imgCmtResult = null;
-                        if (comment.data.files) {
-                            if (comment.data.files[0]) {
-                                imgCmtResult = await getCmtImg(comment._id);
-                            }
-                        }
-                        replyBoxHtml += `
-                        <div class="col" id="comment_${comment._id}">
-                            <div class="card mb-3">
-                                <div class="row g-0">
-                                    <div class="col-md-8">
-                                        <div class="card-body">
-                                            <h5 class="card-title">${comment.author}</h5>
-                                            <p class="card-text">${comment.data.content || ""}</p>
-                                            <p class="card-text"><small class="text-muted">${new Date(comment.createdAt).toLocaleString("ja")}</small></p>
-                                        </div>
-                                    </div>
-                            `;
-                        if (imgCmtResult) {
-                            for (const fileKey in imgCmtResult.files) {
-                                let file = imgCmtResult.files[fileKey];
-                                let showModalJs = `showModal(['${file.url}'])`;
-                                if (file.isPdf) {
-                                    showModalJs = `showCmtPdf('${comment._id}', '${fileKey}')`;
-                                }
-                                replyBoxHtml += `
-                                    <div class="col-md-4 card-link" data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick="${showModalJs}">
-                                        <div class="card bg-dark text-white">
-                                            <img src="${file.url}" class="bd-placeholder-img card-img-top">
-                                            <div class="card-img-overlay">
-                                                <p class="card-text">${file.name}</p>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                            }
-                        }
-                        replyBoxHtml += `
-                                    </div>
-                                </div>
-                            </div>`;
+                        addComment(comment);
                     }
-                    $("#replyList").html(replyBoxHtml);
                     await connectWebSocket(classId);
                 })
                 .fail(function(jqXHR, textStatus, errorThrown){
@@ -163,6 +120,52 @@ $(function() {
         });
 
 });
+
+async function addComment (comment) {
+    let replyBoxHtml = "";
+    let imgCmtResult = null;
+    if (comment.data.files) {
+        if (comment.data.files[0]) {
+            imgCmtResult = await getCmtImg(comment._id);
+        }
+    }
+    replyBoxHtml += `
+        <div class="col" id="comment_${comment._id}">
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">${comment.author}</h5>
+                            <p class="card-text">${comment.data.content || ""}</p>
+                            <p class="card-text"><small class="text-muted">${new Date(comment.createdAt).toLocaleString("ja")}</small></p>
+                        </div>
+                    </div>
+            `;
+    if (imgCmtResult) {
+        for (const fileKey in imgCmtResult.files) {
+            let file = imgCmtResult.files[fileKey];
+            let showModalJs = `showModal(['${file.url}'])`;
+            if (file.isPdf) {
+                showModalJs = `showCmtPdf('${comment._id}', '${fileKey}')`;
+            }
+            replyBoxHtml += `
+                <div class="col-md-4 card-link" data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick="${showModalJs}">
+                    <div class="card bg-dark text-white">
+                        <img src="${file.url}" class="bd-placeholder-img card-img-top">
+                        <div class="card-img-overlay">
+                            <p class="card-text">${file.name}</p>
+                        </div>
+                    </div>
+                </div>`;
+        }
+    }
+    replyBoxHtml += `
+            </div>
+        </div>
+    </div>`;
+    $("#replyList").html(replyBoxHtml + $("#replyList").html());
+}
+
 async function getImg(classId, boardId) {
     return new Promise((resolve, reject) => {
             $.ajax({
@@ -253,21 +256,16 @@ async function getCmtPdf(commentId, key) {
 async function connectWebSocket (classId) {
     let connection = new WebSocket(`ws://localhost:3000/ws/connect/${classId}`);
 
-    connection.onopen = function(event) {
-        console.log(`connect`, event.data);
-    };
-
-    connection.onerror = function(error) {
-        alert("エラーが発生しました。");
-        console.error(error);
-    };
-
     connection.onmessage = function(event) {
-        console.log("message", event.data);
+        let getWsData = JSON.parse(event.data);
+        if (getWsData.type === "postComment") {
+            if (getWsData.data.boardId !== boardId) return;
+            addComment(getWsData.data);
+        }
     };
 
     connection.onclose = function() {
-        alert("サーバーから切断されました。再接続します。");
-        setTimeout(() => { connectWebSocket(); }, 5000);
+        bootstrap.showToast({ body: "サーバーから切断されました。再接続します。", toastClass: "text-bg-danger"})
+        setTimeout(() => { connectWebSocket(classId); }, 5000);
     };
 }
