@@ -12,7 +12,7 @@ router.get('/:boardId/list', async function(req, res) {
             });
             return;
         }
-        let onePagePer = 20;
+        let onePagePer = req.query.onePer ? 1 : 20;
         const commentListCollection = res.app.locals.db.collection("commentList");
         const commentListFind = await commentListCollection.findOne({ boardId : boardId });
         let pageNumber = Number(req.query.page) || 1;

@@ -8,6 +8,10 @@ $(function(){
                 fd.append("files", file);
             }
         }
+        let title = $("#titleInput").val();
+        if (title) {
+            fd.append("title", title);
+        }
         let content = $("#contentInput").val();
         if (content) {
             fd.append("content", content);

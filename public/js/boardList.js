@@ -70,7 +70,7 @@ async function addBoard (board) {
     $('#cardList .card').matchHeight();
     $.ajax({
         type: "GET",
-        url: `/api/comment/${board._id}/list`,
+        url: `/api/comment/${board._id}/list?onePer=true`,
         contentType: 'application/json',
         dataType: "json"
     })
