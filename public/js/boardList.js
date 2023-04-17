@@ -2,6 +2,8 @@ let nowData = null;
 
 function getBoard (classId, pageNum = 1) {
     $("#cardList").html(" ");
+    $("#loading-overlay").fadeIn(300);
+    $("#cardList").hide();
     $.ajax({
         type: "GET",
         url: `/api/board/${classId}/list?page=${pageNum}`,
@@ -9,10 +11,11 @@ function getBoard (classId, pageNum = 1) {
         dataType: "json"
     })
         .done(async function(data, textStatus, jqXHR){
-            $("#loading-overlay").fadeOut(300);
             for (const datum of data.boards.reverse()) {
                 await addBoard(datum);
             }
+            $("#cardList").show();
+            $("#loading-overlay").fadeOut(300);
             nowData = data;
             await connectWebSocket(classId);
             if (data.pageNumber == 1) {
