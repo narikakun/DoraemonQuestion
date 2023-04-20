@@ -146,6 +146,7 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             updatedAt: new Date().getTime(),
             author: username,
             data: {
+                title: postTitle,
                 content: postContent,
                 files: s3Files
             }

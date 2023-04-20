@@ -7,6 +7,7 @@ $(function() {
     })
         .done(async function(data, textStatus, jqXHR){
             $("#authorName").text(data.data.author);
+            $("#postTitle").text(data.data.data.title);
             $("#content").html(data.data.data.content ? data.data.data.content.replace(/\r\n/g, '<br />') : "");
             $("#loading-overlay").fadeOut(300);
             let imgHtml = "";
