@@ -43,9 +43,10 @@ async function addBoard (board) {
     <div class="card mb-3 card-link flex-grow-1" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">${board.author}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">${board.author}</h6>
                 <small class="text-muted">${new Date(board.createdAt).toLocaleString("ja")}</small>
             </div>
+            <h5 class="card-title mb-0">${board.data.title || "タイトル無し"}</h5>
             <hr>
             <p class="card-text">${truncateString(board.data.content, 70)||""}</p>
             <div class="row row-cols-3 g-3">`;
