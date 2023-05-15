@@ -38,7 +38,7 @@ router.get('/:boardId/list', async function(req, res) {
         const commentCount = await commentListCollection.countDocuments({ boardId : boardId });
         let commentList = [];
 
-        let commentFind = await commentListCollection.find({ boardId: boardId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).sort( { createdAt: -1 } ).toArray();
+        let commentFind = await commentListCollection.find({ boardId: boardId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).sort( { createdAt: 1 } ).toArray();
         for (const commentKey in commentFind) {
             commentList.push(commentFind[commentKey]);
         }

@@ -115,12 +115,6 @@ $(function() {
 
 async function addComment (comment) {
     let replyBoxHtml = "";
-    let imgCmtResult = null;
-    if (comment.data.files) {
-        if (comment.data.files[0]) {
-            imgCmtResult = await getCmtImg(comment._id);
-        }
-    }
     replyBoxHtml += `
         <div class="col" id="comment_${comment._id}">
             <div class="card mb-3">
@@ -133,24 +127,25 @@ async function addComment (comment) {
                         </div>
                     </div>
             `;
-    if (imgCmtResult) {
-        for (const fileKey in imgCmtResult.files) {
-            let file = imgCmtResult.files[fileKey];
-            let showModalJs = `showModal(['${file.url}'])`;
-            if (file.isPdf) {
-                showModalJs = `showCmtPdf('${comment._id}', '${fileKey}')`;
-            }
-            replyBoxHtml += `
-                <div class="col-md-4 card-link" data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick="${showModalJs}">
-                    <div class="card bg-dark text-white">
-                        <img src="${file.url}" class="bd-placeholder-img card-img-top">
-                        <div class="card-img-overlay">
-                            <p class="card-text">${file.name}</p>
+            for (const fileObj of comment.data.files) {
+                let showModalJs = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
+                let pdfList = [];
+                if (fileObj.pdf) {
+                    for (const pdfKey in fileObj.pdf) {
+                        pdfList.push(fileObj.pdf[pdfKey].image);
+                    }
+                    showModalJs = `onclick='window.open("${serviceUrl}/uploads${String(fileObj.key)}")'`;
+                }
+                replyBoxHtml += `
+                    <div class="col-md-4 card-link" ${showModalJs}>
+                        <div class="card bg-dark text-white">
+                            <img src="/uploads${pdfList[0]?pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
+                            <div class="card-img-overlay">
+                                <p class="card-text">${fileObj.filename}</p>
+                            </div>
                         </div>
-                    </div>
-                </div>`;
-        }
-    }
+                    </div>`;
+            }
     replyBoxHtml += `
             </div>
         </div>
