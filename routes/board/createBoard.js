@@ -18,7 +18,7 @@ const multerErrorHandler = (err, req, res, next) => {
 };
 
 const upload = multer({
-    dest: 'uploads/',
+    dest: 'cache-uploads/',
     limits: {
         fieldSize: 5 * 1024 * 1024
     }

@@ -8,8 +8,9 @@ $(function() {
         .done(async function(data, textStatus, jqXHR){
             let boardData = data.data;
             let boardObj = boardData.data;
-            $("#authorName").text(boardData.author);
+            $("#authorName").text(`投稿者: ${boardData.author}`);
             $("#postTitle").text(boardObj.title);
+            $("#createdAt").text(new Date(boardData.createdAt).toLocaleString("ja"));
             $("#content").html(boardObj.content ? boardObj.content.replace(/\r\n/g, '<br />') : "");
             let imgHtml = "";
             for (const fileObj of boardObj.files) {
@@ -19,10 +20,10 @@ $(function() {
                     for (const pdfKey in fileObj.pdf) {
                         pdfList.push(fileObj.pdf[pdfKey].image);
                     }
-                    showModalJs = 'open(`' + serviceUrl + '/uploads' + String(fileObj.key) + '`)';
+                    showModalJs = `onclick='window.open("${serviceUrl}/uploads${String(fileObj.key)}")'`;
                 }
                 imgHtml += `<div class="col">
-                    <div class="card shadow-sm card-link" >
+                    <div class="card shadow-sm card-link" ` + showModalJs + `>
                         <img src="/uploads${pdfList[0]?pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
                         <div class="card-body">
                             <p class="card-text">${fileObj.filename}</p>
@@ -31,9 +32,10 @@ $(function() {
                 </div>`;
             }
             $("#imgList").html(imgHtml);
-            if ($.cookie(`adminPass_${classId}`) || boardData.author == $.cookie('username')) {
+            if (boardData.author == $.cookie('username')) {
                 $("#replyBox").html(`<div class="card mb-3">
                     <div class="card-body">
+                        <h4>コメント新規投稿</h4>
                         <p id="errorMsg2" style="color: red;"></p>
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">内容</label>
@@ -57,7 +59,7 @@ $(function() {
                     for (let i = 1; i <= 1; i++) {
                         let file = $("#inputFile0" + i).prop('files')[0];
                         if (file) {
-                            fd.append("files", file);
+                            fd.append("files", file, encodeURIComponent(`${file.name}`));
                         }
                     }
                     let content = $("#contentInput").val();

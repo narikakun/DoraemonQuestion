@@ -20,9 +20,13 @@
         <p id="errorMsg" style="color: red;"></p>
         <div class="p-2 mb-4 bg-light rounded-3">
             <div class="container-fluid py-1">
-                <h2 class="fw-bold" id="authorName"></h2>
-                <h2 class="fw-bold" id="postTitle"></h2>
-                <p class="col-md-8 fs-4" id="content"></p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="fw-bold" id="postTitle"></h2>
+                    <small class="text-muted" id="createdAt"></small>
+                </div>
+                <h6 class="card-subtitle mb-2 text-muted" id="authorName"></h6>
+                <hr class="my-4">
+                <p id="content"></p>
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="imgList"></div>
             </div>
         </div>

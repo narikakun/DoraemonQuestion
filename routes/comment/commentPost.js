@@ -1,18 +1,11 @@
 const router = require("express").Router();
-const { S3Client, PutObjectCommand} = require('@aws-sdk/client-s3');
-const s3 = new S3Client({
-    credentials: {
-        accessKeyId: process.env.S3_accessKeyId,
-        secretAccessKey: process.env.S3_secretAccessKey,
-    },
-    region: process.env.S3_region,
-    endpoint: process.env.S3_Endpoint
-});
 
+const canvas = require('canvas');
 const multer  = require('multer');
-
 const path = require("path");
 const fs = require("fs");
+const sharp = require('sharp');
+const crypto = require("crypto");
 
 const multerErrorHandler = (err, req, res, next) => {
     if (err) {
@@ -25,7 +18,7 @@ const multerErrorHandler = (err, req, res, next) => {
 };
 
 const upload = multer({
-    dest: 'uploads/',
+    dest: 'cache-uploads/',
     limits: {
         fieldSize: 5 * 1024 * 1024
     }
