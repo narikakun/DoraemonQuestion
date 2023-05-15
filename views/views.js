@@ -26,4 +26,9 @@ router.get('/class/:classId/board/:boardId', function(req, res) {
     res.render('pages/class/boardShow', { classId: req.params.classId, boardId: req.params.boardId });
 });
 
+// ツール
+router.get('/showPdf/:pdfKey', function(req, res) {
+    res.render('pages/showPdf', { pdfKey: req.params.pdfKey });
+});
+
 module.exports = router;

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns="http://www.w3.org/1999/html">
+<head>
+    <%- include('../partials/head'); %>
+    <title><%= pdfKey %> | <%= process.env.ServiceName %></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.6.172/pdf.min.js"></script>
+    <script type="text/javascript" src="/js/pdfjs/browser.js"></script>
+    <link rel="stylesheet" href="/js/pdfjs/browser.css"/>
+    <script>
+        const pdfKey = decodeURIComponent("<%= pdfKey %>");
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.6.172/pdf.worker.js';
+        const loadingTask = pdfjsLib.getDocument({
+            url: `/uploads/${pdfKey}`
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <%- include('../partials/header'); %>
+    </header>
+    <div id="controls">
+<footer>
+    <%- include('../partials/footer'); %>
+</footer>
+</body>
+</html>

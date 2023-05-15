@@ -13,16 +13,16 @@ $(function() {
             $("#content").html(boardObj.content ? boardObj.content.replace(/\r\n/g, '<br />') : "");
             let imgHtml = "";
             for (const fileObj of boardObj.files) {
-                let showModalJs = `showModal(${JSON.stringify([fileObj.key])})`;
+                let showModalJs = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
                 let pdfList = [];
                 if (fileObj.pdf) {
                     for (const pdfKey in fileObj.pdf) {
                         pdfList.push(fileObj.pdf[pdfKey].image);
                     }
-                    showModalJs = `showModal(${JSON.stringify(pdfList)})`;
+                    showModalJs = 'open(`' + serviceUrl + '/uploads' + String(fileObj.key) + '`)';
                 }
                 imgHtml += `<div class="col">
-                    <div class="card shadow-sm card-link" data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='${showModalJs}'>
+                    <div class="card shadow-sm card-link" >
                         <img src="/uploads${pdfList[0]?pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
                         <div class="card-body">
                             <p class="card-text">${fileObj.filename}</p>
