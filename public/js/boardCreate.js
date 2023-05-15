@@ -5,7 +5,7 @@ $(function(){
         for (let i = 1; i <= 3; i++) {
             let file = $("#inputFile0"+i).prop('files')[0];
             if (file) {
-                fd.append("files", file);
+                fd.append("files", file, encodeURIComponent(`${file.name}`));
             }
         }
         let title = $("#titleInput").val();

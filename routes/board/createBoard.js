@@ -87,7 +87,7 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             await fs.writeFileSync(`${path.resolve(".")}/public/uploads${fileKey}`, getFile);
             fileObj.key = fileKey;
             fileObj.uuid = fileUUID;
-            fileObj.filename = file.originalname;
+            fileObj.filename = decodeURIComponent(file.originalname);
             fileObj.mimetype = file.mimetype;
             fileObj.size = file.size;
             if (file.mimetype == "image/png" || file.mimetype == "image/jpeg") {
@@ -100,7 +100,7 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             if (file.mimetype == "application/pdf") {
                 const pngPages = await pdfToPng.pdfToPng(getFile,
                     {
-                        outputFileMask: file.filename,
+                        outputFileMask: fileObj.filename,
                         strictPagesToProcess: true,
                         viewportScale: 2.0,
                     });
