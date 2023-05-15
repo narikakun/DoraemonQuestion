@@ -2,7 +2,6 @@ let nowData = null;
 
 function getBoard (classId, pageNum = 1) {
     $("#cardList").html(" ");
-    $("#loading-overlay").fadeIn(300);
     $("#cardList").hide();
     $.ajax({
         type: "GET",
@@ -15,7 +14,6 @@ function getBoard (classId, pageNum = 1) {
                 await addBoard(datum);
             }
             $("#cardList").show();
-            $("#loading-overlay").fadeOut(300);
             nowData = data;
             await connectWebSocket(classId);
             if (data.pageNumber == 1) {
@@ -31,7 +29,6 @@ function getBoard (classId, pageNum = 1) {
             $("#paginationInfo").text(`　${data.pageNumber} / ${data.maxPage}　`);
         })
         .fail(function(jqXHR, textStatus, errorThrown){
-            $("#loading-overlay").fadeOut(300);
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
 }
@@ -50,45 +47,33 @@ async function addBoard (board) {
             <hr>
             <p class="card-text">${truncateString(board.data.content, 70)||""}</p>
             <div class="row row-cols-3 g-3">`;
-    if (board.data.files) {
-        let showMimeType = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
-        let images = board.data.files.filter(f => showMimeType.includes(f.mimetype));
-        if (images[0]) {
-            let imgResult = await getImg(board.classId, board._id);
-            for (const fileElm of imgResult.files) {
-                boardHtml += `<div class="col"><img src="${fileElm.url}" class="img-fluid"></div>`;
+        for (const fileObj of board.data.files) {
+            let imageType = ["image/jpeg", "image/jpg", "image/png"];
+            if (imageType.includes(fileObj.mimetype)) {
+                boardHtml += `<div class="col"><img src="/uploads${fileObj.resize || fileObj.key}" class="img-fluid"></div>`;
+            }
+            if (fileObj.mimetype == "application/pdf") {
+                let pdfImg = fileObj.pdf[Object.keys(fileObj.pdf)[0]];
+                boardHtml += `<div class="col"><img src="/uploads${pdfImg.resize || pdfImg.image}" class="img-fluid"></div>`;
             }
         }
-    }
     boardHtml += `
             </div>
         </div>
         <div id="board_comment_${board._id}">
-        </div>
+        `;
+    if (board.lastComment) {
+        $(`#board_comment_${board._id}`).html(`<div class="card-footer">
+            <div class="comment d-flex justify-content-between align-items-center">
+                <span><strong>${board.lastComment.author}</strong> ${truncateString(board.lastComment.data.content, 15) || ""}</span>
+                <span class="badge bg-secondary"><span id="board_comment_${board._id}_commentCounter">${board.lastComment.commentCount}</span> コメント</span>
+            </div>`);
+    }
+        boardHtml += `</div>
     </div>
 </div>`;
     $("#cardList").html(boardHtml + $("#cardList").html());
     $('#cardList .card').matchHeight();
-    $.ajax({
-        type: "GET",
-        url: `/api/comment/${board._id}/list?onePer=true`,
-        contentType: 'application/json',
-        dataType: "json"
-    })
-        .done(async function(commentData, textStatus, jqXHR){
-            if (commentData.comments[0]) {
-                let comment = commentData.comments[0];
-                $(`#board_comment_${board._id}`).html(`<div class="card-footer">
-                    <div class="comment d-flex justify-content-between align-items-center">
-                        <span><strong>${comment.author}</strong> ${truncateString(comment.data.content, 15) || ""}</span>
-                        <span class="badge bg-secondary"><span id="board_comment_${board._id}_commentCounter">${commentData.commentCount}</span> コメント</span>
-                    </div>`);
-                $('#cardList .card').matchHeight();
-            }
-        })
-        .fail(function(jqXHR, textStatus, errorThrown){
-            $('#errorMsg').text(jqXHR.responseJSON.msg);
-        });
 }
 
 $(function() {
@@ -103,24 +88,6 @@ $(function() {
         getBoard(nowData.classId, pageNumber);
     })
 });
-
-async function getImg(classId, boardId) {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: `/api/board/${classId}/image/${boardId}`,
-            type: "GET",
-            async: true,
-        }).then(
-            function (result) {
-                resolve(result);
-            },
-            function () {
-                reject();
-            }
-        )
-        }
-    )
-}
 
 async function connectWebSocket (classId) {
     let connection = new WebSocket(`ws://localhost:3000/ws/connect/${classId}`);

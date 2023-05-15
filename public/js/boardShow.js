@@ -6,43 +6,32 @@ $(function() {
         dataType: "json"
     })
         .done(async function(data, textStatus, jqXHR){
-            $("#authorName").text(data.data.author);
-            $("#postTitle").text(data.data.data.title);
-            $("#content").html(data.data.data.content ? data.data.data.content.replace(/\r\n/g, '<br />') : "");
-            $("#loading-overlay").fadeOut(300);
+            let boardData = data.data;
+            let boardObj = boardData.data;
+            $("#authorName").text(boardData.author);
+            $("#postTitle").text(boardObj.title);
+            $("#content").html(boardObj.content ? boardObj.content.replace(/\r\n/g, '<br />') : "");
             let imgHtml = "";
-            let imgResult = [];
-            if (data.data.data.files) {
-                imgResult = await getImg(classId, boardId);
-            }
-            for (const imgKey in imgResult.files) {
-                let img = imgResult.files[imgKey];
-                let showModalJs = `showModal(['${img.url}'])`;
-                if (img.isPdf) {
-                    showModalJs = `showPdf('${classId}', '${boardId}', '${imgKey}')`;
+            for (const fileObj of boardObj.files) {
+                let showModalJs = `showModal(${JSON.stringify([fileObj.key])})`;
+                let pdfList = [];
+                if (fileObj.pdf) {
+                    for (const pdfKey in fileObj.pdf) {
+                        pdfList.push(fileObj.pdf[pdfKey].image);
+                    }
+                    showModalJs = `showModal(${JSON.stringify(pdfList)})`;
                 }
                 imgHtml += `<div class="col">
-                        <div class="card shadow-sm card-link" data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick="${showModalJs}">
-                            <img src="${img.url}" class="bd-placeholder-img card-img-top">
-                            <div class="card-body">
-                                <p class="card-text">${img.name}</p>
-                            </div>
-                        </div>`;
-                if ($.cookie(`adminPass_${classId}`)) {
-                    imgHtml += `
-                        <div class="card shadow-sm mt-2">
-                            <div class="card-body">
-                                <div class="d-flex">
-                                    <a href="${img.url}" download="${img.name}" target="_blank" class="btn btn-sm btn-outline-secondary">画像をダウンロード</a>
-                                    ${img.isPdf?`<a href="${img.pdfUrl}" download="${img.name}" target="_blank" class="btn btn-sm btn-outline-secondary mx-3">PDFをダウンロード</a>`:""}
-                                </div>
-                            </div>
-                        </div>`;
-                }
-                imgHtml += `</div>`;
+                    <div class="card shadow-sm card-link" data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='${showModalJs}'>
+                        <img src="/uploads${pdfList[0]?pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
+                        <div class="card-body">
+                            <p class="card-text">${fileObj.filename}</p>
+                        </div>
+                    </div>
+                </div>`;
             }
             $("#imgList").html(imgHtml);
-            if ($.cookie(`adminPass_${classId}`) || data.data.author == $.cookie('username')) {
+            if ($.cookie(`adminPass_${classId}`) || boardData.author == $.cookie('username')) {
                 $("#replyBox").html(`<div class="card mb-3">
                     <div class="card-body">
                         <p id="errorMsg2" style="color: red;"></p>
@@ -166,93 +155,6 @@ async function addComment (comment) {
     </div>`;
     $("#replyList").html(replyBoxHtml + $("#replyList").html());
 }
-
-async function getImg(classId, boardId) {
-    return new Promise((resolve, reject) => {
-            $.ajax({
-                url: `/api/board/${classId}/image/${boardId}`,
-                type: "GET",
-                async: true,
-            }).then(
-                function (result) {
-                    resolve(result);
-                },
-                function () {
-                    reject();
-                }
-            )
-        }
-    )
-}
-
-async function showPdf (classId, boardId, key) {
-    $("#loading-overlay").fadeIn(300);
-    let pdfImages = await getPdf(classId, boardId, key);
-    showModal(pdfImages.files.map(f => f.url));
-    $("#loading-overlay").fadeOut(300);
-}
-
-async function showCmtPdf (commentId, key) {
-    $("#loading-overlay").fadeIn(300);
-    let pdfImages = await getCmtPdf(commentId, key);
-    showModal(pdfImages.files.map(f => f.url));
-    $("#loading-overlay").fadeOut(300);
-}
-
-async function getPdf(classId, boardId, key) {
-    return new Promise((resolve, reject) => {
-            $.ajax({
-                url: `/api/board/${classId}/pdf/${boardId}/${key}`,
-                type: "GET",
-                async: true,
-            }).then(
-                function (result) {
-                    resolve(result);
-                },
-                function () {
-                    reject();
-                }
-            )
-        }
-    )
-}
-
-async function getCmtImg(commentId) {
-    return new Promise((resolve, reject) => {
-            $.ajax({
-                url: `/api/comment/${commentId}/image`,
-                type: "GET",
-                async: true,
-            }).then(
-                function (result) {
-                    resolve(result);
-                },
-                function () {
-                    reject();
-                }
-            )
-        }
-    )
-}
-
-async function getCmtPdf(commentId, key) {
-    return new Promise((resolve, reject) => {
-            $.ajax({
-                url: `/api/comment/${commentId}/pdf/${key}`,
-                type: "GET",
-                async: true,
-            }).then(
-                function (result) {
-                    resolve(result);
-                },
-                function () {
-                    reject();
-                }
-            )
-        }
-    )
-}
-
 
 async function connectWebSocket (classId) {
     let connection = new WebSocket(`ws://localhost:3000/ws/connect/${classId}`);

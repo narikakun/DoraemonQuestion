@@ -41,7 +41,7 @@
         function showModal (imgUrls) {
             let imgHtml = "";
             for (const url of imgUrls) {
-                imgHtml += `<img src="${url}" class="img-fluid" data-bs-dismiss="modal" aria-label="Close" width="100%" />`
+                imgHtml += `<img src="/uploads${url}" class="img-fluid" data-bs-dismiss="modal" aria-label="Close" width="100%" />`
             }
             $("#lightboxModalImages").html(imgHtml)
         }

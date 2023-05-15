@@ -1,18 +1,11 @@
 const router = require("express").Router();
-const { S3Client, PutObjectCommand} = require('@aws-sdk/client-s3');
-const s3 = new S3Client({
-    credentials: {
-        accessKeyId: process.env.S3_accessKeyId,
-        secretAccessKey: process.env.S3_secretAccessKey,
-    },
-    region: process.env.S3_region,
-    endpoint: process.env.S3_Endpoint
-});
 
+const canvas = require('canvas');
 const multer  = require('multer');
-
 const path = require("path");
 const fs = require("fs");
+const sharp = require('sharp');
+const crypto = require("crypto");
 
 const multerErrorHandler = (err, req, res, next) => {
     if (err) {
@@ -64,7 +57,7 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             });
             return;
         }
-        let s3Files = [];
+        let files = [];
         for (const file of req.files) {
             const filetypes = /jpeg|jpg|png|pdf/;
             const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -83,9 +76,26 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             }
         }
         for (const file of req.files) {
+            let fileObj = {};
             const ext = path.extname(file.originalname).toLowerCase();
             let getFile = await fs.readFileSync(file.path);
-            let fileKey = `${process.env.S3_path}/${classId}/${new Date().getTime()}-${file.filename}${ext}`;
+            if (!fs.existsSync(`${path.resolve(".")}/public/uploads/${classId}`)) {
+                await fs.mkdirSync(`${path.resolve(".")}/public/uploads/${classId}`);
+            }
+            let fileUUID = crypto.randomUUID();
+            let fileKey = `/${classId}/${fileUUID}${ext}`;
+            await fs.writeFileSync(`${path.resolve(".")}/public/uploads${fileKey}`, getFile);
+            fileObj.key = fileKey;
+            fileObj.uuid = fileUUID;
+            fileObj.filename = file.originalname;
+            fileObj.mimetype = file.mimetype;
+            fileObj.size = file.size;
+            if (file.mimetype == "image/png" || file.mimetype == "image/jpeg") {
+                let resizeFile = await sharp(getFile).resize(500).png().toBuffer();;
+                let resizeKey = `/${classId}/${fileUUID}-500.png`;
+                await fs.writeFileSync(`${path.resolve(".")}/public/uploads${resizeKey}`, resizeFile);
+                fileObj.resize = resizeKey;
+            }
             let pdfImages = null;
             if (file.mimetype == "application/pdf") {
                 const pngPages = await pdfToPng.pdfToPng(getFile,
@@ -94,50 +104,22 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
                         strictPagesToProcess: true,
                         viewportScale: 2.0,
                     });
-                pdfImages = [];
+                pdfImages = {};
                 for (const pngPagesKey in pngPages) {
                     if (pngPagesKey > 15) break;
-                    let pdfUpKey = `${process.env.S3_path}/${classId}/${new Date().getTime()}-${pngPages[pngPagesKey].name}`;
-                    let s3UpPdf = await s3.send(
-                        new PutObjectCommand({
-                            Bucket: process.env.S3_bucket,
-                            Key: pdfUpKey,
-                            Body: pngPages[pngPagesKey].content,
-                            ContentType: "png"
-                        })
-                    );
-                    if (s3UpPdf["$metadata"].httpStatusCode != 200) {
-                        res.status(500).json({
-                            msg: "ファイルアップロード中にサーバーエラーが発生しました。"
-                        });
-                        return;
+                    let pdfUpKey = `/${classId}/${fileUUID}-${pngPagesKey}.png`;
+                    await fs.writeFileSync(`${path.resolve(".")}/public/uploads${pdfUpKey}`, pngPages[pngPagesKey].content);
+                    let resizePdfFile = await sharp(pngPages[pngPagesKey].content).resize(500).png().toBuffer();;
+                    let resizePdfKey = `/${classId}/${fileUUID}-${pngPagesKey}-500.png`;
+                    await fs.writeFileSync(`${path.resolve(".")}/public/uploads${resizePdfKey}`, resizePdfFile);
+                    pdfImages[pngPagesKey] = {
+                        image: pdfUpKey,
+                        resize: resizePdfKey
                     }
-                    pdfImages.push(pdfUpKey);
                 }
+                fileObj.pdf = pdfImages;
             }
-            let s3UpRes = await s3.send(
-                new PutObjectCommand({
-                    Bucket: process.env.S3_bucket,
-                    Key: fileKey,
-                    Body: getFile,
-                    ContentType: file.mimetype
-                })
-            );
-            if (s3UpRes["$metadata"].httpStatusCode != 200) {
-                res.status(500).json({
-                    msg: "ファイルアップロード中にサーバーエラーが発生しました。"
-                });
-                return;
-            }
-            let dbD = {
-                name: file.originalname,
-                mimetype: file.mimetype,
-                id: file.filename,
-                key: fileKey,
-                size: file.size,
-            };
-            if (pdfImages) dbD["pdf"] = pdfImages;
-            s3Files.push(dbD);
+            files.push(fileObj);
         }
         const boardListCollection = res.app.locals.db.collection("boardList");
         let boardData = {
@@ -148,7 +130,7 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             data: {
                 title: postTitle,
                 content: postContent,
-                files: s3Files
+                files: files
             }
         };
         await boardListCollection.insertOne(boardData);

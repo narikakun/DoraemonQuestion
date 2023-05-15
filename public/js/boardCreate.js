@@ -29,6 +29,7 @@ $(function(){
                 window.location.href = `/class/${data.data.classId}/board/${data.data._id}`
             })
             .fail(function(jqXHR, textStatus, errorThrown){
+                $("#loading-overlay").fadeOut(300);
                 $('#errorMsg').text(jqXHR.responseJSON.msg);
             });
     });

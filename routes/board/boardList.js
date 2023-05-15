@@ -38,8 +38,15 @@ router.get('/:classId/list', async function(req, res) {
         let boardList = [];
 
         let boardFind = await boardListCollection.find({ classId: classId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).sort( { createdAt: -1 } ).toArray();
+
+        const commentListCollection = res.app.locals.db.collection("commentList");
         for (const boardKey in boardFind) {
-            boardList.push(boardFind[boardKey]);
+            let boardData = boardFind[boardKey];
+            const commentFind = await commentListCollection.findOne({ boardId : String(boardData._id)}, null, { sort: { timestamp: -1} });
+            if (commentFind) {
+                boardData.lastComment = commentFind;
+            }
+            boardList.push(boardData);
         }
         res.status(200).json({
             msg: "取得しました。",
