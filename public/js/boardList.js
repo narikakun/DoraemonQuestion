@@ -60,18 +60,18 @@ async function addBoard (board) {
     boardHtml += `
             </div>
         </div>
-        <div id="board_comment_${board._id}">
-        `;
+        <div id="board_comment_${board._id}">`;
     if (board.lastComment) {
-        $(`#board_comment_${board._id}`).html(`<div class="card-footer">
+        boardHtml += `<div class="card-footer">
             <div class="comment d-flex justify-content-between align-items-center">
                 <span><strong>${board.lastComment.author}</strong> ${truncateString(board.lastComment.data.content, 15) || ""}</span>
                 <span class="badge bg-secondary"><span id="board_comment_${board._id}_commentCounter">${board.lastComment.commentCount}</span> コメント</span>
-            </div>`);
-    }
-        boardHtml += `</div>
-    </div>
+            </div>
 </div>`;
+    }
+    boardHtml += `</div>
+        </div>
+        </div>`;
     $("#cardList").html(boardHtml + $("#cardList").html());
     $('#cardList .card').matchHeight();
 }

@@ -42,9 +42,11 @@ router.get('/:classId/list', async function(req, res) {
         const commentListCollection = res.app.locals.db.collection("commentList");
         for (const boardKey in boardFind) {
             let boardData = boardFind[boardKey];
-            const commentFind = await commentListCollection.findOne({ boardId : String(boardData._id)}, null, { sort: { timestamp: -1} });
-            if (commentFind) {
-                boardData.lastComment = commentFind;
+            const commentFind = await commentListCollection.find({ boardId : String(boardData._id)}, {limit: 1}).sort( { createdAt: -1 } ).toArray();
+            if (commentFind[0]) {
+                boardData.lastComment = commentFind[0];
+                const commentCount = await commentListCollection.countDocuments({ boardId : String(boardData._id) });
+                boardData.lastComment.commentCount = commentCount;
             }
             boardList.push(boardData);
         }
