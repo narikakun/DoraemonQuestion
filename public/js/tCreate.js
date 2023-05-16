@@ -6,7 +6,8 @@ $(function(){
             url: "/api/class/create",
             data: JSON.stringify({
                 classId: $('#classId').val(),
-                tPassword: $('#adminPassword').val()
+                tPassword: $('#adminPassword').val(),
+                className: $('#className').val()
             }),
             contentType: 'application/json',
             dataType: "json"
@@ -26,6 +27,11 @@ $(function(){
         }
     });
     $("#classId").keypress(function(e){
+        if(e.which == 13){
+            $("#createClassButton").click();
+        }
+    });
+    $("#className").keypress(function(e){
         if(e.which == 13){
             $("#createClassButton").click();
         }

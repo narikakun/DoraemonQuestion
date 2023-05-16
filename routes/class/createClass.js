@@ -1,9 +1,11 @@
 const router = require("express").Router();
+const bcrypt = require('bcrypt');
 
 router.post('/create', async function(req, res) {
     try {
         const classId = req.body.classId;
         const tPassword = req.body.tPassword; // 教師用パスワードの入力
+        const className = req.body.className;
         if (!classId || !tPassword) {
             res.status(400).json({
                 msg: "クラスIDまたは教師用パスワードが指定されていません。"
@@ -24,9 +26,11 @@ router.post('/create', async function(req, res) {
             });
             return;
         }
+        let tPasswordHashed = bcrypt.hashSync(tPassword, 10);
         let classData = {
             classId: classId,
-            tPassword: tPassword,
+            tPassword: tPasswordHashed,
+            className,
             createdAt: new Date().getTime()
         };
         await classListCollection.insertOne(classData);

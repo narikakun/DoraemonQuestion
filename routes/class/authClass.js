@@ -11,8 +11,20 @@ router.post('/auth', async function(req, res) {
             return;
         }
         const collection = res.app.locals.db.collection("classList");
-        const classObj = await collection.findOne({ classId : classId});
+        const classObj = await collection.findOne({ classId : classId });
         if (classObj) {
+            let sessionClass = [];
+            try {
+                if (req.cookies.classList) {
+                    sessionClass = String(req.cookies.classList).split(",");
+                }
+            } catch (e) {
+                console.error(e);
+            }
+            if (!sessionClass.includes(classId)) {
+                sessionClass.push(classId);
+            }
+            res.cookie("classList", sessionClass.join(","));
             res.cookie("username", username);
             res.status(200).json({
                 msg: "クラスが見つかりました。名前を登録しました。",
