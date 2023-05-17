@@ -6,6 +6,7 @@ function getBoard (classId, pageNum = 1) {
     if ($.cookie("listMode")) showListMode = true;
     if (!showListMode) {
         $("#cardList").attr("class", "row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mt-3");
+        $("#modeChangeButton").text("カード切り替え");
     }
     $("#cardList").hide();
     $.ajax({
@@ -15,6 +16,7 @@ function getBoard (classId, pageNum = 1) {
         dataType: "json"
     })
         .done(async function(data, textStatus, jqXHR){
+            data.boards.reverse();
             await boardRefresh(data);
             nowData = data;
             await connectWebSocket(classId);
@@ -35,20 +37,39 @@ function getBoard (classId, pageNum = 1) {
         });
 }
 
+async function modeChange() {
+    $("#modeChangeButton").hide();
+    $("#cardList").html(" ");
+    if (showListMode) {
+        $.cookie("listMode", "");
+        $("#cardList").attr("class", "row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mt-3");
+        showListMode = false;
+        $("#modeChangeButton").text("カード切り替え");
+    } else {
+        $.cookie("listMode", "true");
+        $("#cardList").attr("class", "mt-3");
+        showListMode = true;
+        $("#modeChangeButton").text("リスト切り替え");
+    }
+    await boardRefresh(nowData);
+    $("#modeChangeButton").show();
+}
+
 async function boardRefresh (data) {
     if (showListMode) {
         await showBoardList(data.boards);
     } else {
-        for (const datum of data.boards.reverse()) {
+        for (const datum of data.boards) {
             await addBoard(datum);
         }
     }
     $("#cardList").show();
+    setTimeout(()=> $('#cardList .card').matchHeight(), 100);
 }
 
 async function showBoardList (board) {
     let boardHtml = "";
-    boardHtml += `<table class="table">
+    boardHtml += `<table class="table table-hover">
     <thead>
         <tr>
             <th scope="col">投稿者名</th>
@@ -58,13 +79,16 @@ async function showBoardList (board) {
         </tr>
     </thead>
   <tbody>`;
-    for (const datum of board.reverse()) {
-        boardHtml += `<tr id="board_${board._id}"><div onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
-<td>${board.author}</td>
-<td>${board.data.title || "タイトル無し"}</td>
-<td>${truncateString(board.data.content, 30) || ""}</td>
-<td>${new Date(board.createdAt).toLocaleString("ja")}</td>
-</div></tr>`;
+    let board2 = Object.keys(board).reverse();
+    for (const dataKey in board2) {
+        let datum = board[board2[dataKey]];
+        boardHtml += `
+        <tr id="board_${datum._id}" onclick="window.location.href='/class/${datum.classId}/board/${datum._id}'">
+                <td>${datum.author}</td>
+                <td>${datum.data.title || "タイトル無し"}</td>
+                <td>${truncateString(datum.data.content, 30) || ""}</td>
+                <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
+        </tr>`;
     }
     boardHtml += `</tbody></table>`;
     $("#cardList").html(boardHtml);
