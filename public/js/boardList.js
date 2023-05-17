@@ -1,7 +1,12 @@
 let nowData = null;
+let showListMode = false;
 
 function getBoard (classId, pageNum = 1) {
     $("#cardList").html(" ");
+    if ($.cookie("listMode")) showListMode = true;
+    if (!showListMode) {
+        $("#cardList").attr("class", "row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mt-3");
+    }
     $("#cardList").hide();
     $.ajax({
         type: "GET",
@@ -10,10 +15,7 @@ function getBoard (classId, pageNum = 1) {
         dataType: "json"
     })
         .done(async function(data, textStatus, jqXHR){
-            for (const datum of data.boards.reverse()) {
-                await addBoard(datum);
-            }
-            $("#cardList").show();
+            await boardRefresh(data);
             nowData = data;
             await connectWebSocket(classId);
             if (data.pageNumber == 1) {
@@ -33,45 +35,80 @@ function getBoard (classId, pageNum = 1) {
         });
 }
 
+async function boardRefresh (data) {
+    if (showListMode) {
+        await showBoardList(data.boards);
+    } else {
+        for (const datum of data.boards.reverse()) {
+            await addBoard(datum);
+        }
+    }
+    $("#cardList").show();
+}
+
+async function showBoardList (board) {
+    let boardHtml = "";
+    boardHtml += `<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">投稿者名</th>
+            <th scope="col">タイトル</th>
+            <th scope="col">内容</th>
+            <th scope="col">日付</th>
+        </tr>
+    </thead>
+  <tbody>`;
+    for (const datum of board.reverse()) {
+        boardHtml += `<tr id="board_${board._id}"><div onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
+<td>${board.author}</td>
+<td>${board.data.title || "タイトル無し"}</td>
+<td>${truncateString(board.data.content, 30) || ""}</td>
+<td>${new Date(board.createdAt).toLocaleString("ja")}</td>
+</div></tr>`;
+    }
+    boardHtml += `</tbody></table>`;
+    $("#cardList").html(boardHtml);
+}
+
 async function addBoard (board) {
     let boardHtml = "";
     boardHtml += `
 <div class="col d-flex" id="board_${board._id}">
-    <div class="card mb-3 card-link flex-grow-1" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <h6 class="card-subtitle mb-2 text-muted">${board.author}</h6>
-                <small class="text-muted">${new Date(board.createdAt).toLocaleString("ja")}</small>
-            </div>
-            <h5 class="card-title mb-0">${board.data.title || "タイトル無し"}</h5>
-            <hr>
-            <p class="card-text">${truncateString(board.data.content, 70)||""}</p>
-            <div class="row row-cols-3 g-3">`;
-        for (const fileObj of board.data.files) {
-            let imageType = ["image/jpeg", "image/jpg", "image/png"];
-            if (imageType.includes(fileObj.mimetype)) {
-                boardHtml += `<div class="col"><img src="/uploads${fileObj.resize || fileObj.key}" class="img-fluid"></div>`;
-            }
-            if (fileObj.mimetype == "application/pdf") {
-                let pdfImg = fileObj.pdf[Object.keys(fileObj.pdf)[0]];
-                boardHtml += `<div class="col"><img src="/uploads${pdfImg.resize || pdfImg.image}" class="img-fluid"></div>`;
-            }
-        }
-    boardHtml += `
-            </div>
+<div class="card mb-3 card-link flex-grow-1" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="card-subtitle mb-2 text-muted">${board.author}</h6>
+            <small class="text-muted">${new Date(board.createdAt).toLocaleString("ja")}</small>
         </div>
-        <div id="board_comment_${board._id}">`;
+        <h5 class="card-title mb-0">${board.data.title || "タイトル無し"}</h5>
+        <hr>
+        <p class="card-text">${truncateString(board.data.content, 70) || ""}</p>
+        <div class="row row-cols-3 g-3">`;
+    for (const fileObj of board.data.files) {
+        let imageType = ["image/jpeg", "image/jpg", "image/png"];
+        if (imageType.includes(fileObj.mimetype)) {
+            boardHtml += `<div class="col"><img src="/uploads${fileObj.resize || fileObj.key}" class="img-fluid"></div>`;
+        }
+        if (fileObj.mimetype == "application/pdf") {
+            let pdfImg = fileObj.pdf[Object.keys(fileObj.pdf)[0]];
+            boardHtml += `<div class="col"><img src="/uploads${pdfImg.resize || pdfImg.image}" class="img-fluid"></div>`;
+        }
+    }
+    boardHtml += `
+        </div>
+    </div>
+    <div id="board_comment_${board._id}">`;
     if (board.lastComment) {
         boardHtml += `<div class="card-footer">
-            <div class="comment d-flex justify-content-between align-items-center">
-                <span><strong>${board.lastComment.author}</strong> ${truncateString(board.lastComment.data.content, 15) || ""}</span>
-                <span class="badge bg-secondary"><span id="board_comment_${board._id}_commentCounter">${board.lastComment.commentCount}</span> コメント</span>
-            </div>
+        <div class="comment d-flex justify-content-between align-items-center">
+            <span><strong>${board.lastComment.author}</strong> ${truncateString(board.lastComment.data.content, 15) || ""}</span>
+            <span class="badge bg-secondary"><span id="board_comment_${board._id}_commentCounter">${board.lastComment.commentCount}</span> コメント</span>
+        </div>
 </div>`;
     }
     boardHtml += `</div>
-        </div>
-        </div>`;
+    </div>
+    </div>`;
     $("#cardList").html(boardHtml + $("#cardList").html());
     $('#cardList .card').matchHeight();
 }

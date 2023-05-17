@@ -7,6 +7,9 @@ $(function(){
     if (cookieClassList) {
         let classListArray = cookieClassList.split(",");
         classListArray.reverse();
+        if (classListArray.length < 1) {
+            $("#cookieClassDiv").hide();
+        }
         for (const classListArrayElement of classListArray) {
             $("#cookieClassList").html($("#cookieClassList").html() + `<div class="d-flex text-muted pt-3" id="listElm_${classListArrayElement}"><span class="flex-shrink-0 me-2"></span>
                 <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
@@ -32,6 +35,8 @@ $(function(){
                     $(`#listId_${classListArrayElement}`).text("@" + data.classId);
                 })
         }
+    } else {
+        $("#cookieClassDiv").hide();
     }
     $("#classLoginButton").click(function(event){
         $("#loading-overlay").fadeIn(300);
