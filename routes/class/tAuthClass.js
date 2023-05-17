@@ -1,4 +1,6 @@
 const router = require("express").Router();
+const bcrypt = require('bcrypt');
+const crypto = require("crypto");
 
 router.post('/teacherAuth', async function(req, res) {
     try {
@@ -11,16 +13,30 @@ router.post('/teacherAuth', async function(req, res) {
             return;
         }
         const collection = res.app.locals.db.collection("classList");
-        const classObj = await collection.findOne({ classId : classId, tPassword: tPassword});
+        const classObj = await collection.findOne({ classId : classId});
         if (classObj) {
-            res.cookie(`adminPass_${classObj.classId}`, tPassword);
+            let passCheck = bcrypt.compareSync(tPassword, classObj.tPassword);
+            if (!passCheck) {
+                res.status(404).json({
+                    msg: "パスワードが違います。"
+                });
+                return;
+            }
+            let sessionPassword = await bcrypt.hash(crypto.randomUUID(), 10);
+            const sessionAdminCollection = res.app.locals.db.collection("loginAdminSession");
+            await sessionAdminCollection.insertOne({
+                classId: classObj.classId,
+                sPassword: sessionPassword,
+                createdAt: new Date().getTime()
+            });
+            res.cookie(`adminSession_${classObj.classId}`, sessionPassword);
             res.status(200).json({
                 msg: "ログインに成功しました。",
                 classId: classId
             });
         } else {
             res.status(404).json({
-                msg: "クラスIDまたはパスワードが違います。"
+                msg: "クラスIDが違います。"
             });
         }
     } catch (err) {

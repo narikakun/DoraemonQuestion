@@ -26,6 +26,11 @@ router.get('/class/:classId/board/:boardId', function(req, res) {
     res.render('pages/class/boardShow', { classId: req.params.classId, boardId: req.params.boardId });
 });
 
+// 管理者向け
+router.get('/admin/:classId', function(req, res) {
+    res.render('pages/admin/mainAdmin', { classId: req.params.classId });
+});
+
 // ツール
 router.get('/showPdf/:pdfKey', function(req, res) {
     res.render('pages/showPdf', { pdfKey: req.params.pdfKey });
