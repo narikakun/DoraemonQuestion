@@ -177,6 +177,11 @@ async function connectWebSocket (classId) {
             });
         } else if (getWsData.type === "createBoard") {
             addBoard(getWsData.data);
+        } else if (getWsData.type == "removeBoard") {
+            let boardB = $(`#board_${getWsData.boardId}`);
+            if (boardB) {
+                boardB.remove();
+            }
         }
     };
 

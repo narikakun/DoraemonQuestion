@@ -31,6 +31,22 @@ function getBoard (classId, pageNum = 1) {
         });
 }
 
+async function removeBoard (classId, boardId) {
+    $.ajax({
+        type: "POST",
+        url: `/api/admin/${classId}/removeBoard/${boardId}`,
+        contentType: 'application/json',
+        dataType: "json"
+    })
+        .done(async function(data, textStatus, jqXHR){
+            bootstrap.showToast({ body: "削除しました。", toastClass: "text-bg-primary"});
+            $(`#board_${boardId}`).remove();
+        })
+        .fail(function(jqXHR, textStatus, errorThrown){
+            $('#errorMsg').text(jqXHR.responseJSON.msg);
+        });
+}
+
 async function showBoardList (board) {
     let boardHtml = "";
     boardHtml += `<table class="table">
@@ -59,7 +75,7 @@ async function showBoardList (board) {
                 <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
                 <td>
                     <a target="_blank" href="/class/${datum.classId}/board/${datum._id}" class="btn btn-info btn-sm">投稿を表示</a>
-                    <a target="_blank" href="/class/${datum.classId}/board/${datum._id}" class="btn btn-danger btn-sm">投稿を削除</a>
+                    <button type="button" target="_blank" onclick="removeBoard('${datum.classId}', '${datum._id}')" class="btn btn-danger btn-sm">投稿を削除</button>
                 </td>
         </tr>`;
     }

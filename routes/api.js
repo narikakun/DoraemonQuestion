@@ -24,4 +24,6 @@ router.use("/comment", require("./comment/commentPost"));
 
 router.use("/ws", require("./websocket/wsConnect"));
 
+router.use("/admin", require("./admin/removeBoard"));
+
 module.exports = router;
