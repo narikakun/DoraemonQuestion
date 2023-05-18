@@ -26,8 +26,29 @@
             </li>
         </ul>
     </nav>
-
 </main>
+<div class="modal fade" id="deleteCheckModal" tabindex="-1" aria-labelledby="deleteCheckModalLabel">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCheckModalLabel">本当に削除しますか？</h5>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="text-muted">投稿者名</p>
+                    <p class="px-2" id="modalAuthor"></p>
+                </div>
+                <div>
+                    <p class="text-muted">タイトル</p>
+                    <p class="px-2" id="modalTitle"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="removeBoard()">削除</button>
+            </div>
+        </div>
+    </div>
+</div>
 <footer>
     <%- include('../../partials/footer'); %>
 </footer>

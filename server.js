@@ -20,6 +20,7 @@ const server = app.listen(3000, function(){
 app.use("/", require("./views/views"));
 
 connectDB();
+
 app.locals.logger = logger;
 
 app.use("/api", require("./routes/api"));

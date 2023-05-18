@@ -8,10 +8,10 @@ $(function() {
         .done(async function(data, textStatus, jqXHR){
             let boardData = data.data;
             let boardObj = boardData.data;
-            $("#authorName").text(`投稿者: ${boardData.author}`);
-            $("#postTitle").text(boardObj.title);
+            $("#authorName").text(`投稿者: ${escapeHTML(boardData.author)}`);
+            $("#postTitle").text(escapeHTML(boardObj.title));
             $("#createdAt").text(new Date(boardData.createdAt).toLocaleString("ja"));
-            $("#content").html(boardObj.content ? boardObj.content.replace(/\r\n/g, '<br />') : "");
+            $("#content").html(boardObj.content ? escapeHTML(boardObj.content).replace(/\r\n/g, '<br />') : "");
             let imgHtml = "";
             for (const fileObj of boardObj.files) {
                 let showModalJs = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
@@ -26,7 +26,7 @@ $(function() {
                     <div class="card shadow-sm card-link" ` + showModalJs + `>
                         <img src="/uploads${pdfList[0]?pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
                         <div class="card-body">
-                            <p class="card-text">${fileObj.filename}</p>
+                            <p class="card-text">${escapeHTML(fileObj.filename)}</p>
                         </div>
                     </div>
                 </div>`;
@@ -121,8 +121,8 @@ async function addComment (comment) {
                 <div class="row g-0">
                     <div class="col-md-8">
                         <div class="card-body">
-                            <h5 class="card-title">${comment.author}</h5>
-                            <p class="card-text">${comment.data.content ? comment.data.content.replace(/\r\n/g, '<br />') : ""}</p>
+                            <h5 class="card-title">${escapeHTML(comment.author)}</h5>
+                            <p class="card-text">${comment.data.content ? escapeHTML(comment.data.content).replace(/\r\n/g, '<br />') : ""}</p>
                             <p class="card-text"><small class="text-muted">${new Date(comment.createdAt).toLocaleString("ja")}</small></p>
                         </div>
                     </div>
@@ -141,7 +141,7 @@ async function addComment (comment) {
                         <div class="card bg-dark text-white">
                             <img src="/uploads${pdfList[0]?pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
                             <div class="card-img-overlay">
-                                <p class="card-text">${fileObj.filename}</p>
+                                <p class="card-text">${escapeHTML(fileObj.filename)}</p>
                             </div>
                         </div>
                     </div>`;

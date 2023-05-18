@@ -31,10 +31,12 @@ function getBoard (classId, pageNum = 1) {
         });
 }
 
-async function removeBoard (classId, boardId) {
+let removeClassId, removeBoardId;
+
+async function removeBoard () {
     $.ajax({
         type: "POST",
-        url: `/api/admin/${classId}/removeBoard/${boardId}`,
+        url: `/api/admin/${removeClassId}/removeBoard/${removeBoardId}`,
         contentType: 'application/json',
         dataType: "json"
     })
@@ -45,6 +47,14 @@ async function removeBoard (classId, boardId) {
         .fail(function(jqXHR, textStatus, errorThrown){
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
+}
+
+async function showRemoveModal (cId, bId, title, author) {
+    removeClassId = cId;
+    removeBoardId = bId;
+    $("#modalAuthor").text(author);
+    $("#modalTitle").text(title);
+    $('#deleteCheckModal').modal('show');
 }
 
 async function showBoardList (board) {
@@ -67,15 +77,15 @@ async function showBoardList (board) {
         let datum = board[board2[dataKey]];
         boardHtml += `
         <tr id="board_${datum._id}">
-                <td>${datum.author}</td>
-                <td>${datum.data.title || "タイトル無し"}</td>
-                <td>${truncateString(datum.data.content, 30) || ""}</td>
+                <td>${escapeHTML(datum.author)}</td>
+                <td>${escapeHTML(datum.data.title || "タイトル無し")}</td>
+                <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
                 <td>${datum.data.files.length}</td>
                 <td>${datum.lastComment?.commentCount || 0}</td>
                 <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
                 <td>
                     <a target="_blank" href="/class/${datum.classId}/board/${datum._id}" class="btn btn-info btn-sm">投稿を表示</a>
-                    <button type="button" target="_blank" onclick="removeBoard('${datum.classId}', '${datum._id}')" class="btn btn-danger btn-sm">投稿を削除</button>
+                    <button type="button" target="_blank" onclick="showRemoveModal('${datum.classId}', '${datum._id}', '${escapeHTML(datum.data.title || "タイトル無し")}', '${escapeHTML(datum.author)}')" class="btn btn-danger btn-sm">投稿を削除</button>
                 </td>
         </tr>`;
     }

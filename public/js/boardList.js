@@ -84,9 +84,9 @@ async function showBoardList (board) {
         let datum = board[board2[dataKey]];
         boardHtml += `
         <tr id="board_${datum._id}" onclick="window.location.href='/class/${datum.classId}/board/${datum._id}'">
-                <td>${datum.author}</td>
-                <td>${datum.data.title || "タイトル無し"}</td>
-                <td>${truncateString(datum.data.content, 30) || ""}</td>
+                <td>${escapeHTML(datum.author)}</td>
+                <td>${escapeHTML(datum.data.title || "タイトル無し")}</td>
+                <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
                 <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
         </tr>`;
     }
@@ -101,12 +101,12 @@ async function addBoard (board) {
 <div class="card mb-3 card-link flex-grow-1" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
-            <h6 class="card-subtitle mb-2 text-muted">${board.author}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">${escapeHTML(board.author)}</h6>
             <small class="text-muted">${new Date(board.createdAt).toLocaleString("ja")}</small>
         </div>
-        <h5 class="card-title mb-0">${board.data.title || "タイトル無し"}</h5>
+        <h5 class="card-title mb-0">${escapeHTML(board.data.title || "タイトル無し")}</h5>
         <hr>
-        <p class="card-text">${truncateString(board.data.content, 70) || ""}</p>
+        <p class="card-text">${escapeHTML(truncateString(board.data.content, 70) || "")}</p>
         <div class="row row-cols-3 g-3">`;
     for (const fileObj of board.data.files) {
         let imageType = ["image/jpeg", "image/jpg", "image/png"];
@@ -125,7 +125,7 @@ async function addBoard (board) {
     if (board.lastComment) {
         boardHtml += `<div class="card-footer">
         <div class="comment d-flex justify-content-between align-items-center">
-            <span><strong>${board.lastComment.author}</strong> ${truncateString(board.lastComment.data.content, 15) || ""}</span>
+            <span><strong>${escapeHTML(board.lastComment.author)}</strong> ${escapeHTML(truncateString(board.lastComment.data.content, 15) || "")}</span>
             <span class="badge bg-secondary"><span id="board_comment_${board._id}_commentCounter">${board.lastComment.commentCount}</span> コメント</span>
         </div>
 </div>`;
@@ -169,7 +169,7 @@ async function connectWebSocket (classId) {
                 }
                 boardComment.html(`<div class="card-footer">
                     <div class="comment d-flex justify-content-between align-items-center">
-                        <span><strong>${getWsData.data.author}</strong> ${truncateString(getWsData.data.data.content, 15) || ""}</span>
+                        <span><strong>${getWsData.data.author}</strong> ${escapeHTML(truncateString(getWsData.data.data.content, 15) || "")}</span>
                         <span class="badge bg-success" id="board_comment_${getWsData.data.boardId}_commentCounter">${commentCount} コメント</span>
                     </div>`);
                 $('#cardList .card').matchHeight();
