@@ -16,9 +16,12 @@ log4js.configure({
             "filename": "logs/express.log",
             "pattern": "-yyyy-MM-dd"
         },
-        system: { type: 'console' }
+        system: {type: 'console'}
     },
-    categories: { default: { appenders: ['default', 'system'], level: 'ALL' }, express: { appenders: ['express', 'system'], level: 'ALL' } }
+    categories: {
+        default: {appenders: ['default', 'system'], level: 'ALL'},
+        express: {appenders: ['express', 'system'], level: 'ALL'}
+    }
 });
 const logger = log4js.getLogger("default");
 logger.level = 'ALL';
