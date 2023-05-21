@@ -17,23 +17,21 @@ router.get('/tLogin', function(req, res) {
 
 // クラス関係（ログイン後）
 router.get('/class/:classId', function(req, res) {
-    res.render('pages/class/boardList', { classId: req.params.classId });
+    res.render('pages/class/boardList', { classId: req.params.classId, username: req.cookies.username });
 });
 router.get('/class/:classId/create', function(req, res) {
-    res.render('pages/class/boardCreate', { classId: req.params.classId });
+    res.render('pages/class/boardCreate', { classId: req.params.classId, username: req.cookies.username });
 });
 router.get('/class/:classId/board/:boardId', function(req, res) {
-    res.render('pages/class/boardShow', { classId: req.params.classId, boardId: req.params.boardId });
+    res.render('pages/class/boardShow', { classId: req.params.classId, boardId: req.params.boardId, username: req.cookies.username });
 });
 
 // 管理者向け
 router.get('/admin/:classId', function(req, res) {
-    res.render('pages/admin/mainAdmin', { classId: req.params.classId });
+    res.render('pages/admin/mainAdmin', { classId: req.params.classId, username: req.cookies.username });
 });
-
-// ツール
-router.get('/showPdf/:pdfKey', function(req, res) {
-    res.render('pages/showPdf', { pdfKey: req.params.pdfKey });
+router.get('/admin/:classId/comment/:boardId', function(req, res) {
+    res.render('pages/admin/commentAdmin', { classId: req.params.classId, boardId: req.params.boardId, username: req.cookies.username });
 });
 
 module.exports = router;

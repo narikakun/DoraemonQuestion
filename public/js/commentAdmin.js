@@ -1,17 +1,18 @@
 let nowData = null;
 
-function getBoard (classId, pageNum = 1) {
+function getComment (boardId, pageNum = 1) {
     $("#cardList").html(" ");
     $("#cardList").hide();
     $.ajax({
         type: "GET",
-        url: `/api/board/${classId}/list?page=${pageNum}`,
+        url: `/api/comment/${boardId}/list?page=${pageNum}`,
         contentType: 'application/json',
         dataType: "json"
     })
         .done(async function(data, textStatus, jqXHR){
-            data.boards.reverse();
-            await showBoardList(data.boards);
+            $("#boardId").text(boardId);
+            data.comments.reverse();
+            await showCommentList(data.comments);
             nowData = data;
             $("#cardList").show();
             if (data.pageNumber == 1) {
@@ -31,69 +32,61 @@ function getBoard (classId, pageNum = 1) {
         });
 }
 
-let removeClassId, removeBoardId;
+let removeClassId, removeCommentId;
 
-async function removeBoard () {
+async function removeComment () {
     $.ajax({
         type: "POST",
-        url: `/api/admin/${removeClassId}/removeBoard/${removeBoardId}`,
+        url: `/api/admin/${removeClassId}/removeComment/${removeCommentId}`,
         contentType: 'application/json',
         dataType: "json"
     })
         .done(async function(data, textStatus, jqXHR){
             bootstrap.showToast({ body: "削除しました。", toastClass: "text-bg-primary"});
-            $(`#board_${removeBoardId}`).remove();
+            $(`#comment_${removeCommentId}`).remove();
         })
         .fail(function(jqXHR, textStatus, errorThrown){
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
 }
 
-async function showRemoveModal (cId, bId, title, author, content) {
+async function showRemoveModal (cId, bId, author, content) {
     removeClassId = cId;
-    removeBoardId = bId;
-    $("#modalAuthor").text(author);
-    $("#modalTitle").text(title);
+    removeCommentId = bId;
     $("#modalId").text(bId);
+    $("#modalAuthor").text(author);
     $("#modalContent").text(content);
     $('#deleteCheckModal').modal('show');
 }
 
-async function showBoardList (board) {
-    let boardHtml = "";
-    boardHtml += `<table class="table">
+async function showCommentList (comment) {
+    let commentHtml = "";
+    commentHtml += `<table class="table">
     <thead>
         <tr>
             <th scope="col">投稿者名</th>
-            <th scope="col">タイトル</th>
             <th scope="col">内容</th>
             <th scope="col">ファイル数</th>
-            <th scope="col">コメント数</th>
             <th scope="col">日付</th>
             <th scope="col">操作</th>
         </tr>
     </thead>
   <tbody>`;
-    let board2 = Object.keys(board).reverse();
-    for (const dataKey in board2) {
-        let datum = board[board2[dataKey]];
-        boardHtml += `
-        <tr id="board_${datum._id}">
+    for (const dataKey in comment) {
+        let datum = comment[dataKey];
+        commentHtml += `
+        <tr id="comment_${datum._id}">
                 <td>${escapeHTML(datum.author)}</td>
-                <td>${escapeHTML(datum.data.title || "タイトル無し")}</td>
                 <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
                 <td>${datum.data.files.length}</td>
-                <td>${datum.lastComment?.commentCount || 0}</td>
                 <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
                 <td>
-                    <a target="_blank" href="/class/${datum.classId}/board/${datum._id}" class="btn btn-info btn-sm">表示</a>
-                    <a href="/admin/${datum.classId}/comment/${datum._id}" class="btn btn-secondary btn-sm">コメント管理</a>
-                    <button type="button" target="_blank" onclick="showRemoveModal('${datum.classId}', '${datum._id}', '${escapeHTML(datum.data.title || "タイトル無し")}', '${escapeHTML(datum.author)}', '${escapeHTML(truncateString(datum.data.content, 30) || "")}')" class="btn btn-danger btn-sm">削除</button>
+                    <button type="button" target="_blank" onclick="showRemoveModal('${datum.classId}', '${datum._id}', '${escapeHTML(datum.author)}', '${escapeHTML(truncateString(datum.data.content, 30) || "")}')" class="btn btn-danger btn-sm">コメントを削除</button>
                 </td>
         </tr>`;
     }
-    boardHtml += `</tbody></table>`;
-    $("#cardList").html(boardHtml);
+    commentHtml += `</tbody></table>`;
+    $("#cardList").html(commentHtml);
 }
 
 $(function() {

@@ -32,7 +32,7 @@ $(function() {
                 </div>`;
             }
             $("#imgList").html(imgHtml);
-            if (boardData.author == $.cookie('username')) {
+            //if (boardData.author == $.cookie('username')) {
                 $("#replyBox").html(`<div class="card mb-3">
                     <div class="card-body">
                         <h4>コメント新規投稿</h4>
@@ -89,7 +89,7 @@ $(function() {
                 $("#removeInput01").click(function (e) {
                     $("#inputFile01").val("");
                 });
-            }
+            //}
             $.ajax({
                 type: "GET",
                 url: `/api/comment/${boardId}/list`,

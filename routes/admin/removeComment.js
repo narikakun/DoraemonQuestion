@@ -1,13 +1,13 @@
 const router = require("express").Router();
 const {ObjectId} = require("mongodb");
 
-router.post('/:classId/removeBoard/:boardId', async function(req, res) {
+router.post('/:classId/removeComment/:commentId', async function(req, res) {
     try {
         const classId = req.params.classId;
-        const boardId = req.params.boardId;
-        if (!classId || !boardId) {
+        const commentId = req.params.commentId;
+        if (!classId || !commentId) {
             res.status(400).json({
-                msg: "クラスIDまたはボードIDが入力されていません。"
+                msg: "クラスIDまたはコメントIDが入力されていません。"
             });
             return;
         }
@@ -26,30 +26,30 @@ router.post('/:classId/removeBoard/:boardId', async function(req, res) {
             });
             return;
         }
-        const boardCollection = res.app.locals.db.collection("boardList");
-        const boardFind = await boardCollection.findOne({ _id : new ObjectId(boardId) });
-        if (!boardFind) {
+        const commentCollection = res.app.locals.db.collection("commentList");
+        const commentFind = await commentCollection.findOne({ _id : new ObjectId(commentId) });
+        if (!commentFind) {
             res.status(404).json({
-                msg: "ボードIDが無効です。"
+                msg: "コメントIDが無効です。"
             });
             return;
         }
-        if (boardFind.classId != sessionObj.classId) {
+        if (commentFind.classId != sessionObj.classId) {
             res.status(400).json({
                 msg: "無効なログインです。"
             });
             return;
         }
-        await boardCollection.deleteOne({ _id: new ObjectId(boardId) });
+        await commentCollection.deleteOne({ _id: new ObjectId(commentId) });
         res.status(200).json({
             msg: "削除しました。",
             classId: classId,
-            boardId: boardId
+            commentId: commentId
         });
-        if (req.app.locals.wsList[boardFind.classId]) {
-            for (const wsId of Object.keys(req.app.locals.wsList[boardFind.classId])) {
-                req.app.locals.wsList[boardFind.classId][wsId].send(JSON.stringify({
-                    type: "removeBoard",
+        if (req.app.locals.wsList[commentFind.classId]) {
+            for (const wsId of Object.keys(req.app.locals.wsList[commentFind.classId])) {
+                req.app.locals.wsList[commentFind.classId][wsId].send(JSON.stringify({
+                    type: "removeComment",
                     boardId: boardId
                 }));
             }
