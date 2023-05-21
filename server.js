@@ -32,7 +32,14 @@ app.use('/ws', require('./routes/websocket/wsConnect'))
 
 async function connectDB() {
     try {
-        let dbClient = await MongoClient.connect(process.env.MongoDB);
+        let dbClient = await MongoClient.connect(process.env.MongoDB, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            auth: {
+                username: process.env.MongoDB_User,
+                password: process.env.MongoDB_Pass
+            }
+        });
         let db = await dbClient.db("dQuestion");
         app.locals.db = db;
     } catch (err) {
