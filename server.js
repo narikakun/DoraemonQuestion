@@ -46,3 +46,20 @@ async function connectDB() {
         console.log(err);
     }
 }
+
+log4js.configure({
+    appenders: [
+        {
+            "type": "file",
+            "category": "default",
+            "filename": "logs/default.log",
+            "pattern": "-yyyy-MM-dd"
+        },
+        {
+            "type": "file",
+            "category": "express",
+            "filename": "logs/express.log",
+            "pattern": "-yyyy-MM-dd"
+        },
+    ]
+});
