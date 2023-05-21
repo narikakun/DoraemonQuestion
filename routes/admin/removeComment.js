@@ -50,7 +50,7 @@ router.post('/:classId/removeComment/:commentId', async function(req, res) {
             for (const wsId of Object.keys(req.app.locals.wsList[commentFind.classId])) {
                 req.app.locals.wsList[commentFind.classId][wsId].send(JSON.stringify({
                     type: "removeComment",
-                    boardId: boardId
+                    commentId: commentId
                 }));
             }
         }

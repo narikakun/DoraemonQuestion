@@ -161,6 +161,11 @@ async function connectWebSocket (classId) {
         if (getWsData.type === "postComment") {
             if (getWsData.data.boardId !== boardId) return;
             addComment(getWsData.data);
+        } else if (getWsData.type == "removeComment") {
+            let commentB = $(`#comment_${getWsData.commentId}`);
+            if (commentB) {
+                commentB.remove();
+            }
         }
     };
 
