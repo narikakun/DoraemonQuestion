@@ -2,6 +2,24 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const log4js = require('log4js')
+log4js.configure({
+    appenders: {
+        default: {
+            "type": "file",
+            "category": "default",
+            "filename": "logs/default.log",
+            "pattern": "-yyyy-MM-dd"
+        },
+        express: {
+            "type": "file",
+            "category": "express",
+            "filename": "logs/express.log",
+            "pattern": "-yyyy-MM-dd"
+        },
+        system: { type: 'console' }
+    },
+    categories: { default: { appenders: ['default', 'system'], level: 'ALL' }, express: { appenders: ['express', 'system'], level: 'ALL' } }
+});
 const logger = log4js.getLogger("default");
 logger.level = 'ALL';
 const {MongoClient, Collection} = require("mongodb");
@@ -46,20 +64,3 @@ async function connectDB() {
         console.log(err);
     }
 }
-
-log4js.configure({
-    appenders: [
-        {
-            "type": "file",
-            "category": "default",
-            "filename": "logs/default.log",
-            "pattern": "-yyyy-MM-dd"
-        },
-        {
-            "type": "file",
-            "category": "express",
-            "filename": "logs/express.log",
-            "pattern": "-yyyy-MM-dd"
-        },
-    ]
-});
