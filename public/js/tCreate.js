@@ -13,7 +13,6 @@ $(function () {
             dataType: "json"
         })
             .done(function (data, textStatus, jqXHR) {
-                $.cookie(`adminPass_${data.data.classId}`, $('#adminPassword').val());
                 window.location.href = `/admin/${data.data.classId}`
             })
             .fail(function (jqXHR, textStatus, errorThrown) {

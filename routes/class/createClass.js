@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const bcrypt = require('bcrypt');
+const crypto = require("crypto");
 
 router.post('/create', async function (req, res) {
     try {
@@ -34,6 +35,14 @@ router.post('/create', async function (req, res) {
             createdAt: new Date().getTime()
         };
         await classListCollection.insertOne(classData);
+        let sessionPassword = await bcrypt.hash(crypto.randomUUID(), 10);
+        const sessionAdminCollection = res.app.locals.db.collection("loginAdminSession");
+        await sessionAdminCollection.insertOne({
+            classId: classObj.classId,
+            sPassword: sessionPassword,
+            createdAt: new Date().getTime()
+        });
+        res.cookie(`adminSession_${classObj.classId}`, sessionPassword);
         res.status(200).json({
             msg: "クラスを作成しました。",
             data: classData
