@@ -1,6 +1,6 @@
 let nowData = null;
 
-function getBoard (classId, pageNum = 1) {
+function getBoard(classId, pageNum = 1) {
     $("#cardList").html(" ");
     $("#cardList").hide();
     $.ajax({
@@ -9,7 +9,7 @@ function getBoard (classId, pageNum = 1) {
         contentType: 'application/json',
         dataType: "json"
     })
-        .done(async function(data, textStatus, jqXHR){
+        .done(async function (data, textStatus, jqXHR) {
             data.boards.reverse();
             await showBoardList(data.boards);
             nowData = data;
@@ -26,30 +26,30 @@ function getBoard (classId, pageNum = 1) {
             }
             $("#paginationInfo").text(`　${data.pageNumber} / ${data.maxPage}　`);
         })
-        .fail(function(jqXHR, textStatus, errorThrown){
+        .fail(function (jqXHR, textStatus, errorThrown) {
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
 }
 
 let removeClassId, removeBoardId;
 
-async function removeBoard () {
+async function removeBoard() {
     $.ajax({
         type: "POST",
         url: `/api/admin/${removeClassId}/removeBoard/${removeBoardId}`,
         contentType: 'application/json',
         dataType: "json"
     })
-        .done(async function(data, textStatus, jqXHR){
-            bootstrap.showToast({ body: "削除しました。", toastClass: "text-bg-primary"});
+        .done(async function (data, textStatus, jqXHR) {
+            bootstrap.showToast({body: "削除しました。", toastClass: "text-bg-primary"});
             $(`#board_${removeBoardId}`).remove();
         })
-        .fail(function(jqXHR, textStatus, errorThrown){
+        .fail(function (jqXHR, textStatus, errorThrown) {
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
 }
 
-async function showRemoveModal (cId, bId, title, author, content) {
+async function showRemoveModal(cId, bId, title, author, content) {
     removeClassId = cId;
     removeBoardId = bId;
     $("#modalAuthor").text(author);
@@ -59,7 +59,7 @@ async function showRemoveModal (cId, bId, title, author, content) {
     $('#deleteCheckModal').modal('show');
 }
 
-async function showBoardList (board) {
+async function showBoardList(board) {
     let boardHtml = "";
     boardHtml += `<table class="table">
     <thead>
@@ -96,13 +96,13 @@ async function showBoardList (board) {
     $("#cardList").html(boardHtml);
 }
 
-$(function() {
-    $("#paginationBack").click(function(event){
+$(function () {
+    $("#paginationBack").click(function (event) {
         if (1 >= nowData.pageNumber) return;
         let pageNumber = nowData.pageNumber - 1;
         getBoard(nowData.classId, pageNumber);
     })
-    $("#paginationNext").click(function(event){
+    $("#paginationNext").click(function (event) {
         if (nowData.maxPage <= nowData.pageNumber) return;
         let pageNumber = nowData.pageNumber + 1;
         getBoard(nowData.classId, pageNumber);

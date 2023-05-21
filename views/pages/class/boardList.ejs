@@ -3,43 +3,45 @@
 <head>
     <%- include('../../partials/head'); %>
     <title><%= classId %>のボード | <%= process.env.ServiceName %></title>
-    <script src="/js/boardList.js"></script>
+    <script src="/js/boardList.min.js"></script>
 </head>
 <body>
-    <header>
-        <%- include('../../partials/header'); %>
-    </header>
-    <main class="container">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
-            <h1>ボード画面</h1>
-            <div class="btn-toolbar mb-2 mb-md-0">
-                <div class="btn-group me-2">
-                    <button type="button" class="btn btn-sm btn-outline-secondary" id="modeChangeButton" onclick="modeChange()">リスト切り替え</button>
-                </div>
+<header>
+    <%- include('../../partials/header'); %>
+</header>
+<main class="container">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
+        <h1>ボード画面</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="modeChangeButton"
+                        onclick="modeChange()">リスト切り替え
+                </button>
             </div>
         </div>
-        <hr class="my-4">
-        <p id="errorMsg" style="color: red;"></p>
-        <a class="btn btn-primary w-100" href="/class/<%= classId %>/create">ボートに新規投稿</a>
-        <div id="cardList" class="mt-3"></div>
-        <nav class="mt-3">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" id="paginationBack">
-                    <a class="page-link" tabindex="-1">＜</a>
-                </li>
-                <p id="paginationInfo" class="p-2"></p>
-                <li class="page-item" id="paginationNext">
-                    <a class="page-link">＞</a>
-                </li>
-            </ul>
-        </nav>
-    </main>
+    </div>
+    <hr class="my-4">
+    <p id="errorMsg" style="color: red;"></p>
+    <a class="btn btn-primary w-100" href="/class/<%= classId %>/create">ボートに新規投稿</a>
+    <div id="cardList" class="mt-3"></div>
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" id="paginationBack">
+                <a class="page-link" tabindex="-1">＜</a>
+            </li>
+            <p id="paginationInfo" class="p-2"></p>
+            <li class="page-item" id="paginationNext">
+                <a class="page-link">＞</a>
+            </li>
+        </ul>
+    </nav>
+</main>
 <footer>
     <%- include('../../partials/footer'); %>
 </footer>
 <script>
-    isAdmin('<%=classId%>');
-    getBoard("<%=classId%>");
+    isAdmin('<%= classId %>');
+    getBoard("<%= classId %>");
 </script>
 </body>
 </html>

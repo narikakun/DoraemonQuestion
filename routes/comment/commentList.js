@@ -1,11 +1,11 @@
 const {ObjectId} = require("mongodb");
 const router = require("express").Router();
 
-router.get('/:boardId/list', async function(req, res) {
+router.get('/:boardId/list', async function (req, res) {
     try {
         const boardId = req.params.boardId;
         const boardListCollection = res.app.locals.db.collection("boardList");
-        const boardObj = await boardListCollection.findOne({ _id : new ObjectId(boardId) });
+        const boardObj = await boardListCollection.findOne({_id: new ObjectId(boardId)});
         if (!boardObj) {
             res.status(404).json({
                 msg: "存在しないボードです。"
@@ -14,7 +14,7 @@ router.get('/:boardId/list', async function(req, res) {
         }
         let onePagePer = req.query.onePer ? 1 : 20;
         const commentListCollection = res.app.locals.db.collection("commentList");
-        const commentListFind = await commentListCollection.findOne({ boardId : boardId });
+        const commentListFind = await commentListCollection.findOne({boardId: boardId});
         let pageNumber = Number(req.query.page) || 1;
         if (pageNumber < 1) {
             res.status(400).json({
@@ -35,10 +35,13 @@ router.get('/:boardId/list', async function(req, res) {
             });
             return;
         }
-        const commentCount = await commentListCollection.countDocuments({ boardId : boardId });
+        const commentCount = await commentListCollection.countDocuments({boardId: boardId});
         let commentList = [];
 
-        let commentFind = await commentListCollection.find({ boardId: boardId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).sort( { createdAt: 1 } ).toArray();
+        let commentFind = await commentListCollection.find({boardId: boardId}, {
+            limit: onePagePer,
+            skip: ((pageNumber - 1) * onePagePer)
+        }).sort({createdAt: 1}).toArray();
         for (const commentKey in commentFind) {
             commentList.push(commentFind[commentKey]);
         }
@@ -47,7 +50,7 @@ router.get('/:boardId/list', async function(req, res) {
             classId: boardObj.classId,
             boardId: boardId,
             comments: commentList,
-            maxPage: Math.ceil(commentCount/onePagePer),
+            maxPage: Math.ceil(commentCount / onePagePer),
             pageNumber: pageNumber,
             commentCount: commentCount,
             onePer: onePagePer

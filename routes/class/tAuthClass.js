@@ -2,7 +2,7 @@ const router = require("express").Router();
 const bcrypt = require('bcrypt');
 const crypto = require("crypto");
 
-router.post('/teacherAuth', async function(req, res) {
+router.post('/teacherAuth', async function (req, res) {
     try {
         const classId = req.body.classId;
         const tPassword = req.body.tPassword;
@@ -13,7 +13,7 @@ router.post('/teacherAuth', async function(req, res) {
             return;
         }
         const collection = res.app.locals.db.collection("classList");
-        const classObj = await collection.findOne({ classId : classId});
+        const classObj = await collection.findOne({classId: classId});
         if (classObj) {
             let passCheck = bcrypt.compareSync(tPassword, classObj.tPassword);
             if (!passCheck) {

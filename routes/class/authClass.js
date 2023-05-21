@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-router.post('/auth', async function(req, res) {
+router.post('/auth', async function (req, res) {
     try {
         const classId = req.body.classId;
         const username = req.body.username;
@@ -11,7 +11,7 @@ router.post('/auth', async function(req, res) {
             return;
         }
         const collection = res.app.locals.db.collection("classList");
-        const classObj = await collection.findOne({ classId : classId });
+        const classObj = await collection.findOne({classId: classId});
         if (classObj) {
             let sessionClass = [];
             try {

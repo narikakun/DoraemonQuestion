@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <%- include('../partials/head'); %>
-        <title>ホーム画面 | <%= process.env.ServiceName %></title>
-    </head>
-    <body>
-        <header>
-            <%- include('../partials/header'); %>
-        </header>
-        <main class="container">
-            <h1><%= process.env.ServiceName %></h1>
-            <hr class="my-4">
-            <p><%= process.env.ServiceName %>は、学校などの教育活動で利用できる先生へ質問してクラス全員に共有できるツールです。</p>
-            <h2>ログイン</h2>
-            <ul>
-                <h5>
-                    <li><a href="/login">生徒ログイン</a></li>
-                    <li class="mt-2"><a href="/tLogin">教員用 管理画面ログイン</a></li>
-                </h5>
-            </ul>
-            <p>
-                <a href="/tCreate">教員向け クラス作成</a>
-            </p>
-        </main>
-        <footer>
-            <%- include('../partials/footer'); %>
-        </footer>
-    </body>
+<head>
+    <%- include('../partials/head'); %>
+    <title>ホーム画面 | <%= process.env.ServiceName %></title>
+</head>
+<body>
+<header>
+    <%- include('../partials/header'); %>
+</header>
+<main class="container">
+    <h1><%= process.env.ServiceName %></h1>
+    <hr class="my-4">
+    <p><%= process.env.ServiceName %>は、学校などの教育活動で利用できる先生へ質問してクラス全員に共有できるツールです。</p>
+    <h2>ログイン</h2>
+    <ul>
+        <h5>
+            <li><a href="/login">生徒ログイン</a></li>
+            <li class="mt-2"><a href="/tLogin">教員用 管理画面ログイン</a></li>
+        </h5>
+    </ul>
+    <p>
+        <a href="/tCreate">教員向け クラス作成</a>
+    </p>
+</main>
+<footer>
+    <%- include('../partials/footer'); %>
+</footer>
+</body>
 </html>

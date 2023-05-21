@@ -1,10 +1,10 @@
 const router = require("express").Router();
 
-router.get('/get/:classId', async function(req, res) {
+router.get('/get/:classId', async function (req, res) {
     try {
         const classId = req.params.classId;
         const classListCollection = res.app.locals.db.collection("classList");
-        const classObj = await classListCollection.findOne({ classId : classId});
+        const classObj = await classListCollection.findOne({classId: classId});
         if (!classObj) {
             res.status(404).json({
                 msg: "存在しないクラスです。"

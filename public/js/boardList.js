@@ -1,7 +1,7 @@
 let nowData = null;
 let showListMode = false;
 
-function getBoard (classId, pageNum = 1) {
+function getBoard(classId, pageNum = 1) {
     $("#cardList").html(" ");
     if ($.cookie("listMode")) showListMode = true;
     if (!showListMode) {
@@ -15,7 +15,7 @@ function getBoard (classId, pageNum = 1) {
         contentType: 'application/json',
         dataType: "json"
     })
-        .done(async function(data, textStatus, jqXHR){
+        .done(async function (data, textStatus, jqXHR) {
             data.boards.reverse();
             await boardRefresh(data);
             nowData = data;
@@ -32,7 +32,7 @@ function getBoard (classId, pageNum = 1) {
             }
             $("#paginationInfo").text(`　${data.pageNumber} / ${data.maxPage}　`);
         })
-        .fail(function(jqXHR, textStatus, errorThrown){
+        .fail(function (jqXHR, textStatus, errorThrown) {
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
 }
@@ -55,7 +55,7 @@ async function modeChange() {
     $("#modeChangeButton").show();
 }
 
-async function boardRefresh (data) {
+async function boardRefresh(data) {
     if (showListMode) {
         await showBoardList(data.boards);
     } else {
@@ -64,10 +64,10 @@ async function boardRefresh (data) {
         }
     }
     $("#cardList").show();
-    setTimeout(()=> $('#cardList .card').matchHeight(), 100);
+    setTimeout(() => $('#cardList .card').matchHeight(), 100);
 }
 
-async function showBoardList (board) {
+async function showBoardList(board) {
     let boardHtml = "";
     boardHtml += `<table class="table table-hover">
     <thead>
@@ -94,7 +94,7 @@ async function showBoardList (board) {
     $("#cardList").html(boardHtml);
 }
 
-async function addBoard (board) {
+async function addBoard(board) {
     let boardHtml = "";
     boardHtml += `
 <div class="col d-flex" id="board_${board._id}">
@@ -137,23 +137,23 @@ async function addBoard (board) {
     $('#cardList .card').matchHeight();
 }
 
-$(function() {
-    $("#paginationBack").click(function(event){
+$(function () {
+    $("#paginationBack").click(function (event) {
         if (1 >= nowData.pageNumber) return;
         let pageNumber = nowData.pageNumber - 1;
         getBoard(nowData.classId, pageNumber);
     })
-    $("#paginationNext").click(function(event){
+    $("#paginationNext").click(function (event) {
         if (nowData.maxPage <= nowData.pageNumber) return;
         let pageNumber = nowData.pageNumber + 1;
         getBoard(nowData.classId, pageNumber);
     })
 });
 
-async function connectWebSocket (classId) {
+async function connectWebSocket(classId) {
     let connection = new WebSocket(`ws://localhost:3000/ws/connect/${classId}`);
 
-    connection.onmessage = function(event) {
+    connection.onmessage = function (event) {
         let getWsData = JSON.parse(event.data);
         console.log(getWsData);
         if (getWsData.type === "postComment") {
@@ -161,7 +161,7 @@ async function connectWebSocket (classId) {
             if (!boardElm) return;
             let boardComment = $(`#board_comment_${getWsData.data.boardId}`);
             if (!boardComment) return;
-            boardElm.fadeOut('fast', function() {
+            boardElm.fadeOut('fast', function () {
                 let commentCounterC = $(`#board_comment_${getWsData.data.boardId}_commentCounter`);
                 let commentCount = 1;
                 if (commentCounterC) {
@@ -185,8 +185,10 @@ async function connectWebSocket (classId) {
         }
     };
 
-    connection.onclose = function() {
-        bootstrap.showToast({ body: "サーバーから切断されました。再接続します。", toastClass: "text-bg-danger"})
-        setTimeout(() => { connectWebSocket(classId); }, 5000);
+    connection.onclose = function () {
+        bootstrap.showToast({body: "サーバーから切断されました。再接続します。", toastClass: "text-bg-danger"})
+        setTimeout(() => {
+            connectWebSocket(classId);
+        }, 5000);
     };
 }

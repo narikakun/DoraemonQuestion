@@ -1,11 +1,11 @@
-$(function() {
+$(function () {
     $.ajax({
         type: "GET",
         url: `/api/board/${classId}/board/${boardId}`,
         contentType: 'application/json',
         dataType: "json"
     })
-        .done(async function(data, textStatus, jqXHR){
+        .done(async function (data, textStatus, jqXHR) {
             let boardData = data.data;
             let boardObj = boardData.data;
             $("#authorName").text(`投稿者: ${escapeHTML(boardData.author)}`);
@@ -24,7 +24,7 @@ $(function() {
                 }
                 imgHtml += `<div class="col">
                     <div class="card shadow-sm card-link" ` + showModalJs + `>
-                        <img src="/uploads${pdfList[0]?pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
+                        <img src="/uploads${pdfList[0] ? pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
                         <div class="card-body">
                             <p class="card-text">${escapeHTML(fileObj.filename)}</p>
                         </div>
@@ -33,7 +33,7 @@ $(function() {
             }
             $("#imgList").html(imgHtml);
             //if (boardData.author == $.cookie('username')) {
-                $("#replyBox").html(`<div class="card mb-3">
+            $("#replyBox").html(`<div class="card mb-3">
                     <div class="card-body">
                         <h4>コメント新規投稿</h4>
                         <p id="errorMsg2" style="color: red;"></p>
@@ -52,43 +52,43 @@ $(function() {
                         <button type="button" class="btn btn-primary" id="postCommentButton">ボードの中に投稿する</button>
                     </div>
                 </div>`);
-                $("#postCommentButton").click(function (event) {
-                    $('#errorMsg2').text("");
-                    $("#loading-overlay").fadeIn(300);
-                    let fd = new FormData();
-                    for (let i = 1; i <= 1; i++) {
-                        let file = $("#inputFile0" + i).prop('files')[0];
-                        if (file) {
-                            fd.append("files", file, encodeURIComponent(`${file.name}`));
-                        }
+            $("#postCommentButton").click(function (event) {
+                $('#errorMsg2').text("");
+                $("#loading-overlay").fadeIn(300);
+                let fd = new FormData();
+                for (let i = 1; i <= 1; i++) {
+                    let file = $("#inputFile0" + i).prop('files')[0];
+                    if (file) {
+                        fd.append("files", file, encodeURIComponent(`${file.name}`));
                     }
-                    let content = $("#contentInput").val();
-                    if (content) {
-                        fd.append("content", content);
-                    }
-                    $.ajax({
-                        type: "POST",
-                        url: `/api/comment/${boardId}/post`,
-                        data: fd,
-                        dataType: "json",
-                        cache: false,
-                        processData: false,
-                        contentType: false,
+                }
+                let content = $("#contentInput").val();
+                if (content) {
+                    fd.append("content", content);
+                }
+                $.ajax({
+                    type: "POST",
+                    url: `/api/comment/${boardId}/post`,
+                    data: fd,
+                    dataType: "json",
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                })
+                    .done(function (data, textStatus, jqXHR) {
+                        $("#loading-overlay").fadeOut(300);
+                        $("#contentInput").val("");
+                        $("#inputFile01").val("");
                     })
-                        .done(function (data, textStatus, jqXHR) {
-                            $("#loading-overlay").fadeOut(300);
-                            $("#contentInput").val("");
-                            $("#inputFile01").val("");
-                        })
-                        .fail(function (jqXHR, textStatus, errorThrown) {
-                            $('#errorMsg2').text(jqXHR.responseJSON.msg);
-                            $("#loading-overlay").fadeOut(300);
-                        });
-                });
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        $('#errorMsg2').text(jqXHR.responseJSON.msg);
+                        $("#loading-overlay").fadeOut(300);
+                    });
+            });
 
-                $("#removeInput01").click(function (e) {
-                    $("#inputFile01").val("");
-                });
+            $("#removeInput01").click(function (e) {
+                $("#inputFile01").val("");
+            });
             //}
             $.ajax({
                 type: "GET",
@@ -96,24 +96,24 @@ $(function() {
                 contentType: 'application/json',
                 dataType: "json"
             })
-                .done(async function(data, textStatus, jqXHR){
+                .done(async function (data, textStatus, jqXHR) {
                     for (const comment of data.comments) {
                         addComment(comment);
                     }
                     await connectWebSocket(classId);
                 })
-                .fail(function(jqXHR, textStatus, errorThrown){
+                .fail(function (jqXHR, textStatus, errorThrown) {
                     $('#errorMsg').text(jqXHR.responseJSON.msg);
                 });
         })
-        .fail(function(jqXHR, textStatus, errorThrown) {
+        .fail(function (jqXHR, textStatus, errorThrown) {
             $("#loading-overlay").fadeOut(300);
             $('#errorMsg').text(jqXHR.responseJSON.msg);
         });
 
 });
 
-async function addComment (comment) {
+async function addComment(comment) {
     let replyBoxHtml = "";
     replyBoxHtml += `
         <div class="col" id="comment_${comment._id}">
@@ -127,25 +127,25 @@ async function addComment (comment) {
                         </div>
                     </div>
             `;
-            for (const fileObj of comment.data.files) {
-                let showModalJs = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
-                let pdfList = [];
-                if (fileObj.pdf) {
-                    for (const pdfKey in fileObj.pdf) {
-                        pdfList.push(fileObj.pdf[pdfKey].image);
-                    }
-                    showModalJs = `onclick='window.open("${serviceUrl}/uploads${String(fileObj.key)}")'`;
-                }
-                replyBoxHtml += `
+    for (const fileObj of comment.data.files) {
+        let showModalJs = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
+        let pdfList = [];
+        if (fileObj.pdf) {
+            for (const pdfKey in fileObj.pdf) {
+                pdfList.push(fileObj.pdf[pdfKey].image);
+            }
+            showModalJs = `onclick='window.open("${serviceUrl}/uploads${String(fileObj.key)}")'`;
+        }
+        replyBoxHtml += `
                     <div class="col-md-4 card-link" ${showModalJs}>
                         <div class="card bg-dark text-white">
-                            <img src="/uploads${pdfList[0]?pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
+                            <img src="/uploads${pdfList[0] ? pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
                             <div class="card-img-overlay">
                                 <p class="card-text">${escapeHTML(fileObj.filename)}</p>
                             </div>
                         </div>
                     </div>`;
-            }
+    }
     replyBoxHtml += `
             </div>
         </div>
@@ -153,10 +153,10 @@ async function addComment (comment) {
     $("#replyList").html(replyBoxHtml + $("#replyList").html());
 }
 
-async function connectWebSocket (classId) {
+async function connectWebSocket(classId) {
     let connection = new WebSocket(`ws://localhost:3000/ws/connect/${classId}`);
 
-    connection.onmessage = function(event) {
+    connection.onmessage = function (event) {
         let getWsData = JSON.parse(event.data);
         if (getWsData.type === "postComment") {
             if (getWsData.data.boardId !== boardId) return;
@@ -169,8 +169,10 @@ async function connectWebSocket (classId) {
         }
     };
 
-    connection.onclose = function() {
-        bootstrap.showToast({ body: "サーバーから切断されました。再接続します。", toastClass: "text-bg-danger"})
-        setTimeout(() => { connectWebSocket(classId); }, 5000);
+    connection.onclose = function () {
+        bootstrap.showToast({body: "サーバーから切断されました。再接続します。", toastClass: "text-bg-danger"})
+        setTimeout(() => {
+            connectWebSocket(classId);
+        }, 5000);
     };
 }

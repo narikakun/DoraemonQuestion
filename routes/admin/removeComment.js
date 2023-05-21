@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const {ObjectId} = require("mongodb");
 
-router.post('/:classId/removeComment/:commentId', async function(req, res) {
+router.post('/:classId/removeComment/:commentId', async function (req, res) {
     try {
         const classId = req.params.classId;
         const commentId = req.params.commentId;
@@ -19,7 +19,7 @@ router.post('/:classId/removeComment/:commentId', async function(req, res) {
             return;
         }
         const sessionAdminCollection = res.app.locals.db.collection("loginAdminSession");
-        const sessionObj = await sessionAdminCollection.findOne({ sPassword : adminSessionId});
+        const sessionObj = await sessionAdminCollection.findOne({sPassword: adminSessionId});
         if (!sessionObj) {
             res.status(400).json({
                 msg: "無効なセッションです。"
@@ -27,7 +27,7 @@ router.post('/:classId/removeComment/:commentId', async function(req, res) {
             return;
         }
         const commentCollection = res.app.locals.db.collection("commentList");
-        const commentFind = await commentCollection.findOne({ _id : new ObjectId(commentId) });
+        const commentFind = await commentCollection.findOne({_id: new ObjectId(commentId)});
         if (!commentFind) {
             res.status(404).json({
                 msg: "コメントIDが無効です。"
@@ -40,7 +40,7 @@ router.post('/:classId/removeComment/:commentId', async function(req, res) {
             });
             return;
         }
-        await commentCollection.deleteOne({ _id: new ObjectId(commentId) });
+        await commentCollection.deleteOne({_id: new ObjectId(commentId)});
         res.status(200).json({
             msg: "削除しました。",
             classId: classId,

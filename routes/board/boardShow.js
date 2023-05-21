@@ -1,12 +1,12 @@
 const {ObjectId} = require("mongodb");
 const router = require("express").Router();
 
-router.get('/:classId/board/:boardId', async function(req, res) {
+router.get('/:classId/board/:boardId', async function (req, res) {
     try {
         const classId = req.params.classId;
         const boardId = req.params.boardId;
         const boardListCollection = res.app.locals.db.collection("boardList");
-        const boardObj = await boardListCollection.findOne({ classId : classId, _id: new ObjectId(boardId)});
+        const boardObj = await boardListCollection.findOne({classId: classId, _id: new ObjectId(boardId)});
         if (!boardObj) {
             res.status(404).json({
                 msg: "ボードを見つけることが出来ませんでした。"

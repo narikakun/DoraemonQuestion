@@ -8,12 +8,12 @@ const {MongoClient, Collection} = require("mongodb");
 const cookieParser = require('cookie-parser')
 const expressWs = require('express-ws')
 expressWs(app);
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(log4js.connectLogger(log4js.getLogger('express'), {}));
 app.set('view engine', 'ejs');
 
-const server = app.listen(3000, function(){
+const server = app.listen(3000, function () {
     logger.info(`Expressで起動しました。 ポート番号: ${server.address().port}`);
 });
 
@@ -28,9 +28,9 @@ app.use(express.static('public'));
 app.use("/uploads", require("./routes/utils/image404"));
 
 app.locals.wsList = {};
-app.use('/ws',  require('./routes/websocket/wsConnect'))
+app.use('/ws', require('./routes/websocket/wsConnect'))
 
-async function connectDB () {
+async function connectDB() {
     try {
         let dbClient = await MongoClient.connect(process.env.MongoDB);
         let db = await dbClient.db("dQuestion");

@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const {ObjectId} = require("mongodb");
 
-router.post('/:classId/removeBoard/:boardId', async function(req, res) {
+router.post('/:classId/removeBoard/:boardId', async function (req, res) {
     try {
         const classId = req.params.classId;
         const boardId = req.params.boardId;
@@ -19,7 +19,7 @@ router.post('/:classId/removeBoard/:boardId', async function(req, res) {
             return;
         }
         const sessionAdminCollection = res.app.locals.db.collection("loginAdminSession");
-        const sessionObj = await sessionAdminCollection.findOne({ sPassword : adminSessionId});
+        const sessionObj = await sessionAdminCollection.findOne({sPassword: adminSessionId});
         if (!sessionObj) {
             res.status(400).json({
                 msg: "無効なセッションです。"
@@ -27,7 +27,7 @@ router.post('/:classId/removeBoard/:boardId', async function(req, res) {
             return;
         }
         const boardCollection = res.app.locals.db.collection("boardList");
-        const boardFind = await boardCollection.findOne({ _id : new ObjectId(boardId) });
+        const boardFind = await boardCollection.findOne({_id: new ObjectId(boardId)});
         if (!boardFind) {
             res.status(404).json({
                 msg: "ボードIDが無効です。"
@@ -40,7 +40,7 @@ router.post('/:classId/removeBoard/:boardId', async function(req, res) {
             });
             return;
         }
-        await boardCollection.deleteOne({ _id: new ObjectId(boardId) });
+        await boardCollection.deleteOne({_id: new ObjectId(boardId)});
         res.status(200).json({
             msg: "削除しました。",
             classId: classId,

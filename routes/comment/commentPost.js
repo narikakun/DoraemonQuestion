@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 const canvas = require('canvas');
-const multer  = require('multer');
+const multer = require('multer');
 const path = require("path");
 const fs = require("fs");
 const sharp = require('sharp');
@@ -27,11 +27,11 @@ const upload = multer({
 const pdfToPng = require("pdf-to-png-converter");
 const {ObjectId} = require("mongodb");
 
-router.post('/:boardId/post', [upload.array("files", 1), multerErrorHandler], async function(req, res) {
+router.post('/:boardId/post', [upload.array("files", 1), multerErrorHandler], async function (req, res) {
     try {
         const boardId = req.params.boardId;
         const boardListCollection = res.app.locals.db.collection("boardList");
-        const boardObj = await boardListCollection.findOne({ _id : new ObjectId(boardId) });
+        const boardObj = await boardListCollection.findOne({_id: new ObjectId(boardId)});
         if (!boardObj) {
             res.status(404).json({
                 msg: "存在しないボードです。"
@@ -87,7 +87,8 @@ router.post('/:boardId/post', [upload.array("files", 1), multerErrorHandler], as
             fileObj.mimetype = file.mimetype;
             fileObj.size = file.size;
             if (file.mimetype == "image/png" || file.mimetype == "image/jpeg") {
-                let resizeFile = await sharp(getFile).resize(500).png().toBuffer();;
+                let resizeFile = await sharp(getFile).resize(500).png().toBuffer();
+                ;
                 let resizeKey = `/${classId}/${fileUUID}-500.png`;
                 await fs.writeFileSync(`${path.resolve(".")}/public/uploads${resizeKey}`, resizeFile);
                 fileObj.resize = resizeKey;
@@ -105,7 +106,8 @@ router.post('/:boardId/post', [upload.array("files", 1), multerErrorHandler], as
                     if (pngPagesKey > 15) break;
                     let pdfUpKey = `/${classId}/${fileUUID}-${pngPagesKey}.png`;
                     await fs.writeFileSync(`${path.resolve(".")}/public/uploads${pdfUpKey}`, pngPages[pngPagesKey].content);
-                    let resizePdfFile = await sharp(pngPages[pngPagesKey].content).resize(500).png().toBuffer();;
+                    let resizePdfFile = await sharp(pngPages[pngPagesKey].content).resize(500).png().toBuffer();
+                    ;
                     let resizePdfKey = `/${classId}/${fileUUID}-${pngPagesKey}-500.png`;
                     await fs.writeFileSync(`${path.resolve(".")}/public/uploads${resizePdfKey}`, resizePdfFile);
                     pdfImages[pngPagesKey] = {

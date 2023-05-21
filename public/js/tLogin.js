@@ -1,5 +1,5 @@
-$(function(){
-    $("#classAdminLoginButton").click(function(event){
+$(function () {
+    $("#classAdminLoginButton").click(function (event) {
         $("#loading-overlay").fadeIn(300);
         $.ajax({
             type: "POST",
@@ -11,21 +11,21 @@ $(function(){
             contentType: 'application/json',
             dataType: "json"
         })
-            .done(function(data, textStatus, jqXHR){
+            .done(function (data, textStatus, jqXHR) {
                 window.location.href = `/admin/${data.classId}`
             })
-            .fail(function(jqXHR, textStatus, errorThrown){
+            .fail(function (jqXHR, textStatus, errorThrown) {
                 $("#loading-overlay").fadeOut(300);
                 $('#errorMsg').text(jqXHR.responseJSON.msg);
             });
     });
-    $("#adminPassword").keypress(function(e){
-        if(e.which == 13){
+    $("#adminPassword").keypress(function (e) {
+        if (e.which == 13) {
             $("#classAdminLoginButton").click();
         }
     });
-    $("#classId").keypress(function(e){
-        if(e.which == 13){
+    $("#classId").keypress(function (e) {
+        if (e.which == 13) {
             $("#classAdminLoginButton").click();
         }
     });

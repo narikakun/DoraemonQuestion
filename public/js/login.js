@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
     let cookieUsername = $.cookie("username");
     if (cookieUsername) {
         $("#username").val(cookieUsername);
@@ -26,11 +26,11 @@ $(function(){
                 </div></div>`);
             $.ajax({
                 type: "GET",
-                url: "/api/class/get/"+classListArrayElement,
+                url: "/api/class/get/" + classListArrayElement,
                 contentType: 'application/json',
                 dataType: "json"
             })
-                .done(function(data, textStatus, jqXHR){
+                .done(function (data, textStatus, jqXHR) {
                     $(`#listName_${classListArrayElement}`).text(data.className);
                     $(`#listId_${classListArrayElement}`).text("@" + data.classId);
                 })
@@ -38,7 +38,7 @@ $(function(){
     } else {
         $("#cookieClassDiv").hide();
     }
-    $("#classLoginButton").click(function(event){
+    $("#classLoginButton").click(function (event) {
         $("#loading-overlay").fadeIn(300);
         $.ajax({
             type: "POST",
@@ -50,27 +50,27 @@ $(function(){
             contentType: 'application/json',
             dataType: "json"
         })
-            .done(function(data, textStatus, jqXHR){
+            .done(function (data, textStatus, jqXHR) {
                 window.location.href = `/class/${data.classId}`
             })
-            .fail(function(jqXHR, textStatus, errorThrown){
+            .fail(function (jqXHR, textStatus, errorThrown) {
                 $("#loading-overlay").fadeOut(300);
                 $('#errorMsg').text(jqXHR.responseJSON.msg);
             });
     });
-    $("#username").keypress(function(e){
-        if(e.which == 13){
+    $("#username").keypress(function (e) {
+        if (e.which == 13) {
             $("#classLoginButton").click();
         }
     });
-    $("#classId").keypress(function(e){
-        if(e.which == 13){
+    $("#classId").keypress(function (e) {
+        if (e.which == 13) {
             $("#classLoginButton").click();
         }
     });
 });
 
-function classLogout (classId) {
+function classLogout(classId) {
     let classListArray = String($.cookie("classList")).split(",").filter(f => f != classId);
     $.cookie("classList", classListArray.join(","));
     let classElm = $(`#listElm_${classId}`);

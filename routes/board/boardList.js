@@ -1,10 +1,10 @@
 const router = require("express").Router();
 
-router.get('/:classId/list', async function(req, res) {
+router.get('/:classId/list', async function (req, res) {
     try {
         const classId = req.params.classId;
         const classListCollection = res.app.locals.db.collection("classList");
-        const classObj = await classListCollection.findOne({ classId : classId});
+        const classObj = await classListCollection.findOne({classId: classId});
         if (!classObj) {
             res.status(404).json({
                 msg: "存在しないクラスです。"
@@ -14,7 +14,7 @@ router.get('/:classId/list', async function(req, res) {
         let onePagePer = 9;
 
         const boardListCollection = res.app.locals.db.collection("boardList");
-        const classBoardCollection = await boardListCollection.findOne({ classId : classId });
+        const classBoardCollection = await boardListCollection.findOne({classId: classId});
         let pageNumber = Number(req.query.page) || 1;
         if (pageNumber < 1) {
             res.status(400).json({
@@ -34,18 +34,21 @@ router.get('/:classId/list', async function(req, res) {
             });
             return;
         }
-        const boardCount = await boardListCollection.countDocuments({ classId : classId });
+        const boardCount = await boardListCollection.countDocuments({classId: classId});
         let boardList = [];
 
-        let boardFind = await boardListCollection.find({ classId: classId },  {limit: onePagePer, skip: ((pageNumber-1)*onePagePer)}).sort( { createdAt: -1 } ).toArray();
+        let boardFind = await boardListCollection.find({classId: classId}, {
+            limit: onePagePer,
+            skip: ((pageNumber - 1) * onePagePer)
+        }).sort({createdAt: -1}).toArray();
 
         const commentListCollection = res.app.locals.db.collection("commentList");
         for (const boardKey in boardFind) {
             let boardData = boardFind[boardKey];
-            const commentFind = await commentListCollection.find({ boardId : String(boardData._id)}, {limit: 1}).sort( { createdAt: -1 } ).toArray();
+            const commentFind = await commentListCollection.find({boardId: String(boardData._id)}, {limit: 1}).sort({createdAt: -1}).toArray();
             if (commentFind[0]) {
                 boardData.lastComment = commentFind[0];
-                const commentCount = await commentListCollection.countDocuments({ boardId : String(boardData._id) });
+                const commentCount = await commentListCollection.countDocuments({boardId: String(boardData._id)});
                 boardData.lastComment.commentCount = commentCount;
             }
             boardList.push(boardData);
@@ -54,7 +57,7 @@ router.get('/:classId/list', async function(req, res) {
             msg: "取得しました。",
             classId: classId,
             boards: boardList,
-            maxPage: Math.ceil(boardCount/onePagePer),
+            maxPage: Math.ceil(boardCount / onePagePer),
             pageNumber: pageNumber,
             boardCount: boardCount,
             onePer: onePagePer

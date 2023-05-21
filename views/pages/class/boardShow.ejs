@@ -3,7 +3,7 @@
 <head>
     <%- include('../../partials/head'); %>
     <title><%= classId %>の中にあるボード | <%= process.env.ServiceName %></title>
-    <script src="/js/boardShow.js"></script>
+    <script src="/js/boardShow.min.js"></script>
     <script>
         const classId = "<%= classId %>";
         const boardId = "<%= boardId %>";
@@ -11,39 +11,40 @@
     </script>
 </head>
 <body>
-    <header>
-        <%- include('../../partials/header'); %>
-    </header>
-    <main class="container">
-        <h1>ボード閲覧</h1>
-        <hr class="my-4">
-        <p id="errorMsg" style="color: red;"></p>
-        <div class="p-2 mb-4 bg-light rounded-3">
-            <div class="container-fluid py-1">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="fw-bold" id="postTitle"></h2>
-                    <small class="text-muted" id="createdAt"></small>
-                </div>
-                <h6 class="card-subtitle mb-2 text-muted" id="authorName"></h6>
-                <hr class="my-4">
-                <p id="content"></p>
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="imgList"></div>
+<header>
+    <%- include('../../partials/header'); %>
+</header>
+<main class="container">
+    <h1>ボード閲覧</h1>
+    <hr class="my-4">
+    <p id="errorMsg" style="color: red;"></p>
+    <div class="p-2 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-1">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold" id="postTitle"></h2>
+                <small class="text-muted" id="createdAt"></small>
             </div>
-        </div>
-        <div id="replyBox"></div>
-        <div id="replyList"></div>
-    </main>
-    <div class="modal fade" id="lightboxModal" tabindex="-1" aria-labelledby="lightboxModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl" data-bs-dismiss="modal" aria-label="Close">
-            <div class="modal-content modal-content-lightbox">
-                <div class="modal-body align-self-center align-items-center justify-content-center" id="lightboxModalImages"></div>
-            </div>
+            <h6 class="card-subtitle mb-2 text-muted" id="authorName"></h6>
+            <hr class="my-4">
+            <p id="content"></p>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="imgList"></div>
         </div>
     </div>
+    <div id="replyBox"></div>
+    <div id="replyList"></div>
+</main>
+<div class="modal fade" id="lightboxModal" tabindex="-1" aria-labelledby="lightboxModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" data-bs-dismiss="modal" aria-label="Close">
+        <div class="modal-content modal-content-lightbox">
+            <div class="modal-body align-self-center align-items-center justify-content-center"
+                 id="lightboxModalImages"></div>
+        </div>
+    </div>
+</div>
 <footer>
     <%- include('../../partials/footer'); %>
     <script>
-        function showModal (imgUrls) {
+        function showModal(imgUrls) {
             let imgHtml = "";
             for (const url of imgUrls) {
                 imgHtml += `<img src="/uploads${url}" class="img-fluid" data-bs-dismiss="modal" aria-label="Close" width="100%" />`
@@ -52,6 +53,6 @@
         }
     </script>
 </footer>
-<script> isAdmin('<%=classId%>'); </script>
+<script> isAdmin('<%= classId %>'); </script>
 </body>
 </html>

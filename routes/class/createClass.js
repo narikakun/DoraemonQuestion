@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const bcrypt = require('bcrypt');
 
-router.post('/create', async function(req, res) {
+router.post('/create', async function (req, res) {
     try {
         const classId = req.body.classId;
         const tPassword = req.body.tPassword; // 教師用パスワードの入力
@@ -12,7 +12,7 @@ router.post('/create', async function(req, res) {
             });
             return;
         }
-        if(!classId.match(/^\w{3,20}$/)){
+        if (!classId.match(/^\w{3,20}$/)) {
             res.status(400).json({
                 msg: "クラスIDに半角英数字とアンダースコア（_）以外が含まれているか、3文字以上20文字以下になっていません。"
             });

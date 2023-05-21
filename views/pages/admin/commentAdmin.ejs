@@ -3,7 +3,7 @@
 <head>
     <%- include('../../partials/head'); %>
     <title><%= classId %>の教員用コメント管理パネル | <%= process.env.ServiceName %></title>
-    <script src="/js/commentAdmin.js"></script>
+    <script src="/js/commentAdmin.min.js"></script>
 </head>
 <body>
 <header>
@@ -12,8 +12,8 @@
 <main class="container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/class/<%=classId%>"><%=classId%></a></li>
-            <li class="breadcrumb-item"><a href="/admin/<%=classId%>">ボード管理パネル</a></li>
+            <li class="breadcrumb-item"><a href="/class/<%= classId %>"><%= classId %></a></li>
+            <li class="breadcrumb-item"><a href="/admin/<%= classId %>">ボード管理パネル</a></li>
             <li class="breadcrumb-item active" aria-current="page">コメント管理パネル</li>
         </ol>
     </nav>
@@ -60,7 +60,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="removeComment()">削除</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="removeComment()">削除
+                </button>
             </div>
         </div>
     </div>
@@ -69,8 +70,8 @@
     <%- include('../../partials/footer'); %>
 </footer>
 <script>
-    isAdmin('<%=classId%>');
-    getComment("<%=boardId%>");
+    isAdmin('<%= classId %>');
+    getComment("<%= boardId %>");
 </script>
 </body>
 </html>
