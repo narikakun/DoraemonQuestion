@@ -154,7 +154,7 @@ async function addComment(comment) {
 }
 
 async function connectWebSocket(classId) {
-    let connection = new WebSocket(`ws://localhost:3000/ws/connect/${classId}`);
+    let connection = new WebSocket(`${wsUrl}/ws/connect/${classId}`);
 
     connection.onmessage = function (event) {
         let getWsData = JSON.parse(event.data);
