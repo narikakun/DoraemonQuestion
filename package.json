@@ -1,9 +1,13 @@
 {
   "name": "DoraemonQuestion",
   "version": "1.0.0",
+  "description": "dQuestionは、学校などの教育活動で利用できる先生へ質問してクラス全員に共有できるツールです。",
+  "author": "Narikakun <narikakun@gmail.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.290.0",
-    "@aws-sdk/s3-request-presigner": "^3.292.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
     "canvas": "^2.11.2",
