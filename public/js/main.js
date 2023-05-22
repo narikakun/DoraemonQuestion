@@ -18,3 +18,9 @@ function isAdmin(classId) {
         $("#navL").html($("#navL").html() + `<li class="nav-item"><a class="nav-link" aria-current="page" href="/admin/${classId}">管理パネル</a></li>`)
     }
 }
+
+window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
