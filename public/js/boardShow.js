@@ -128,7 +128,7 @@ async function addComment(comment) {
                     </div>
             `;
     for (const fileObj of comment.data.files) {
-        let showModalJs = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
+        let showModalJs;// = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
         let pdfList = [];
         if (fileObj.pdf) {
             for (const pdfKey in fileObj.pdf) {
@@ -137,11 +137,13 @@ async function addComment(comment) {
             showModalJs = `onclick='window.open("${serviceUrl}/uploads${String(fileObj.key)}")'`;
         }
         replyBoxHtml += `
-                    <div class="col-md-4 card-link" ${showModalJs}>
-                        <div class="card bg-dark text-white">
-                            <img src="/uploads${pdfList[0] ? pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
-                            <div class="card-img-overlay">
-                                <p class="card-text">${escapeHTML(fileObj.filename)}</p>
+                    <div class="col-md-4" ${showModalJs}>
+                        <div class="card card-link m-4">
+                            <a href="/uploads${pdfList[0] ? pdfList[0] : fileObj.key}" class="lightbox-m1" data-toggle="lightbox" data-caption="${escapeHTML(fileObj.filename)}">
+                                <img src="/uploads${pdfList[0] ? pdfList[0] : fileObj.key}" class="card-img-top">
+                            </a>
+                            <div class="card-footer">
+                                <small class="text-muted">${escapeHTML(fileObj.filename)}</small>
                             </div>
                         </div>
                     </div>`;
@@ -151,6 +153,11 @@ async function addComment(comment) {
         </div>
     </div>`;
     $("#replyList").html(replyBoxHtml + $("#replyList").html());
+    document.querySelectorAll('.lightbox-m1').forEach((el) => el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const lightbox = new Lightbox(el, {size: 'fullscreen'});
+        lightbox.show();
+    }));
 }
 
 async function connectWebSocket(classId) {
