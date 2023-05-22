@@ -10,7 +10,7 @@ $(function () {
         .done(async function (data, textStatus, jqXHR) {
             let boardData = data.data;
             let boardObj = boardData.data;
-            $("#authorName").text(`投稿者: ${escapeHTML(boardData.author)}`);
+            $("#authorName").html(`投稿者: ${escapeHTML(boardData.author)} ${boardData.teacher?` <span class="badge bg-secondary">教員</span>`: ""}`);
             $("#postTitle").text(escapeHTML(boardObj.title));
             $("#createdAt").text(new Date(boardData.createdAt).toLocaleString("ja"));
             $("#content").html(boardObj.content ? escapeHTML(boardObj.content).replace(/\r\n/g, '<br />') : "");
@@ -134,7 +134,7 @@ async function addComment(comment) {
                 <div class="row g-0">
                     <div class="col-md-8">
                         <div class="card-body">
-                            <h5 class="card-title">${escapeHTML(comment.author)}</h5>
+                            <h5 class="card-title">${escapeHTML(comment.author)} ${comment.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</h5>
                             <p class="card-text">${comment.data.content ? escapeHTML(comment.data.content).replace(/\r\n/g, '<br />') : ""}</p>
                             <p class="card-text"><small class="text-muted">${new Date(comment.createdAt).toLocaleString("ja")}</small></p>
                         </div>

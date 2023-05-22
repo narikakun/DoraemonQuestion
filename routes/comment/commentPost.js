@@ -47,23 +47,25 @@ router.post('/:boardId/post', [upload.array("files", 1), multerErrorHandler], as
             return;
         }
         let teacher = false;
-        if (username != boardObj.author) {
-            let adminSessionId = req.cookies[`adminSession_${classId}`];
-            if (!adminSessionId) {
+        let adminSessionId = req.cookies[`adminSession_${classId}`];
+        if (adminSessionId) {
+            const sessionAdminCollection = res.app.locals.db.collection("loginAdminSession");
+            const sessionObj = await sessionAdminCollection.findOne({sPassword: adminSessionId});
+            if (!sessionObj) {
+                res.clearCookie(`adminSession_${classId}`);
+                res.status(400).json({
+                    msg: "無効な管理者セッションです。コメントを投稿できません。"
+                });
+                return;
+            }
+            teacher = true;
+        } else {
+            if (username != boardObj.author) {
                 res.status(400).json({
                     msg: "あなたはコメントを投稿できません。"
                 });
                 return;
             }
-            const sessionAdminCollection = res.app.locals.db.collection("loginAdminSession");
-            const sessionObj = await sessionAdminCollection.findOne({sPassword: adminSessionId});
-            if (!sessionObj) {
-                res.status(400).json({
-                    msg: "無効なセッションです。コメントを投稿できません。"
-                });
-                return;
-            }
-            teacher = true;
         }
         const postContent = req.body.content;
         if (!postContent || !req.files) {
