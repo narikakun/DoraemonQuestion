@@ -76,7 +76,7 @@ async function showCommentList(comment) {
         let datum = comment[dataKey];
         commentHtml += `
         <tr id="comment_${datum._id}">
-                <td>${escapeHTML(datum.author)}</td>
+                <td>${escapeHTML(datum.author)}${datum.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</td>
                 <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
                 <td>${datum.data.files.length}</td>
                 <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>

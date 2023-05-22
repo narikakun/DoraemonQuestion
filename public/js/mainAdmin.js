@@ -79,7 +79,7 @@ async function showBoardList(board) {
         let datum = board[board2[dataKey]];
         boardHtml += `
         <tr id="board_${datum._id}">
-                <td>${escapeHTML(datum.author)}</td>
+                <td>${escapeHTML(datum.author)}${datum.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</td>
                 <td>${escapeHTML(datum.data.title || "タイトル無し")}</td>
                 <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
                 <td>${datum.data.files.length}</td>

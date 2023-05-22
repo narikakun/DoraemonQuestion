@@ -10,7 +10,7 @@ $(function () {
         .done(async function (data, textStatus, jqXHR) {
             let boardData = data.data;
             let boardObj = boardData.data;
-            $("#authorName").html(`投稿者: ${escapeHTML(boardData.author)} ${boardData.teacher?` <span class="badge bg-secondary">教員</span>`: ""}`);
+            $("#authorName").html(`投稿者: ${escapeHTML(boardData.author)}${boardData.teacher?` <span class="badge bg-secondary">教員</span>`: ""}`);
             $("#postTitle").text(escapeHTML(boardObj.title));
             $("#createdAt").text(new Date(boardData.createdAt).toLocaleString("ja"));
             $("#content").html(boardObj.content ? escapeHTML(boardObj.content).replace(/\r\n/g, '<br />') : "");
@@ -44,7 +44,7 @@ $(function () {
             }
             $("#imgList").html(imgHtml);
             initLightboxForImages("lightbox-m1");
-            if (boardData.author == $.cookie('username')) {
+            if (boardData.author == $.cookie('username') || $.cookie(`adminSession_${boardData.classId}`)) {
                 $("#replyBox").html(`<div class="card mb-3">
                     <div class="card-body">
                         <h4>コメント新規投稿</h4>
@@ -134,7 +134,7 @@ async function addComment(comment) {
                 <div class="row g-0">
                     <div class="col-md-8">
                         <div class="card-body">
-                            <h5 class="card-title">${escapeHTML(comment.author)} ${comment.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</h5>
+                            <h5 class="card-title">${escapeHTML(comment.author)}${comment.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</h5>
                             <p class="card-text">${comment.data.content ? escapeHTML(comment.data.content).replace(/\r\n/g, '<br />') : ""}</p>
                             <p class="card-text"><small class="text-muted">${new Date(comment.createdAt).toLocaleString("ja")}</small></p>
                         </div>
