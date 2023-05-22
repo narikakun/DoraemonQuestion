@@ -1,3 +1,5 @@
+function initLightboxForImages() { document.querySelectorAll("a.lightbox-m1").forEach(el => el.addEventListener('click', Lightbox.initialize)); }
+
 $(function () {
     $.ajax({
         type: "GET",
@@ -14,24 +16,34 @@ $(function () {
             $("#content").html(boardObj.content ? escapeHTML(boardObj.content).replace(/\r\n/g, '<br />') : "");
             let imgHtml = "";
             for (const fileObj of boardObj.files) {
-                let showModalJs = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
-                let pdfList = [];
                 if (fileObj.pdf) {
-                    for (const pdfKey in fileObj.pdf) {
-                        pdfList.push(fileObj.pdf[pdfKey].image);
-                    }
-                    showModalJs = `onclick='window.open("${serviceUrl}/uploads${String(fileObj.key)}")'`;
-                }
-                imgHtml += `<div class="col">
-                    <div class="card shadow-sm card-link" ` + showModalJs + `>
-                        <img src="/uploads${pdfList[0] ? pdfList[0] : fileObj.key}" class="bd-placeholder-img card-img-top">
-                        <div class="card-body">
-                            <p class="card-text">${escapeHTML(fileObj.filename)}</p>
+                    imgHtml += `
+                    <div class="col">
+                        <div class="card card-link">
+                            <a href="/uploads${String(fileObj.key)}" target="_blank" class="text-decoration-none">
+                                <img src="/uploads${fileObj.pdf[0].resize}" class="card-img-top">
+                                    <div class="card-footer">
+                                        <small class="text-muted">${escapeHTML(fileObj.filename)}</small>
+                                    </div>
+                            </a>
                         </div>
-                    </div>
-                </div>`;
+                    </div>`;
+                } else {
+                    imgHtml += `
+                    <div class="col">
+                        <div class="card card-link">
+                            <a href="/uploads${fileObj.key}" class="lightbox-m1 text-decoration-none" data-toggle="lightbox" data-caption="${escapeHTML(fileObj.filename)}">
+                                <img src="/uploads${fileObj.resize}" class="card-img-top">
+                                <div class="card-footer">
+                                    <small class="text-muted">${escapeHTML(fileObj.filename)}</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>`;
+                }
             }
             $("#imgList").html(imgHtml);
+            initLightboxForImages("lightbox-m1");
             //if (boardData.author == $.cookie('username')) {
             $("#replyBox").html(`<div class="card mb-3">
                     <div class="card-body">
@@ -128,36 +140,38 @@ async function addComment(comment) {
                     </div>
             `;
     for (const fileObj of comment.data.files) {
-        let showModalJs;// = `data-bs-toggle="modal" data-bs-target="#lightboxModal" onclick='showModal(${JSON.stringify([fileObj.key])})'`;
-        let pdfList = [];
         if (fileObj.pdf) {
-            for (const pdfKey in fileObj.pdf) {
-                pdfList.push(fileObj.pdf[pdfKey].image);
-            }
-            showModalJs = `onclick='window.open("${serviceUrl}/uploads${String(fileObj.key)}")'`;
-        }
-        replyBoxHtml += `
-                    <div class="col-md-4" ${showModalJs}>
-                        <div class="card card-link m-4">
-                            <a href="/uploads${pdfList[0] ? pdfList[0] : fileObj.key}" class="lightbox-m1" data-toggle="lightbox" data-caption="${escapeHTML(fileObj.filename)}">
-                                <img src="/uploads${pdfList[0] ? pdfList[0] : fileObj.key}" class="card-img-top">
-                            </a>
-                            <div class="card-footer">
-                                <small class="text-muted">${escapeHTML(fileObj.filename)}</small>
-                            </div>
+            replyBoxHtml += `
+            <div class="col-md-4">
+                <div class="card card-link m-4">
+                    <a href="/uploads${String(fileObj.key)}" target="_blank" class="text-decoration-none">
+                        <img src="/uploads${fileObj.pdf[0].resize}" class="card-img-top">
+                        <div class="card-footer">
+                            <small class="text-muted">${escapeHTML(fileObj.filename)}</small>
                         </div>
-                    </div>`;
+                    </a>
+                </div>
+            </div>`;
+        } else {
+            replyBoxHtml += `
+            <div class="col-md-4">
+                <div class="card card-link m-4">
+                    <a href="/uploads${fileObj.key}" class="lightbox-m1 text-decoration-none" data-toggle="lightbox" data-caption="${escapeHTML(fileObj.filename)}">
+                        <img src="/uploads${fileObj.resize}" class="card-img-top">
+                        <div class="card-footer">
+                            <small class="text-muted">${escapeHTML(fileObj.filename)}</small>
+                        </div>
+                    </a>
+                </div>
+            </div>`;
+        }
     }
     replyBoxHtml += `
             </div>
         </div>
     </div>`;
     $("#replyList").html(replyBoxHtml + $("#replyList").html());
-    document.querySelectorAll('.lightbox-m1').forEach((el) => el.addEventListener('click', (e) => {
-        e.preventDefault();
-        const lightbox = new Lightbox(el, {size: 'fullscreen'});
-        lightbox.show();
-    }));
+    initLightboxForImages("lightbox-m1");
 }
 
 async function connectWebSocket(classId) {
