@@ -48,7 +48,8 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
         if (!postTitle) {
             res.status(400).json({
                 msg: "タイトルを入力してください。"
-            })
+            });
+            return;
         }
         const postContent = req.body.content;
         if (!postContent && !req.files) {
