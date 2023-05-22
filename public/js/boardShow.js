@@ -44,8 +44,8 @@ $(function () {
             }
             $("#imgList").html(imgHtml);
             initLightboxForImages("lightbox-m1");
-            //if (boardData.author == $.cookie('username')) {
-            $("#replyBox").html(`<div class="card mb-3">
+            if (boardData.author == $.cookie('username')) {
+                $("#replyBox").html(`<div class="card mb-3">
                     <div class="card-body">
                         <h4>コメント新規投稿</h4>
                         <p id="errorMsg2" style="color: red;"></p>
@@ -64,6 +64,7 @@ $(function () {
                         <button type="button" class="btn btn-primary" id="postCommentButton">ボードの中に投稿する</button>
                     </div>
                 </div>`);
+            }
             $("#postCommentButton").click(function (event) {
                 $('#errorMsg2').text("");
                 $("#loading-overlay").fadeIn(300);

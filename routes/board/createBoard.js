@@ -58,6 +58,15 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             });
             return;
         }
+        let teacher = false;
+        let adminSessionId = req.cookies[`adminSession_${classId}`];
+        if (adminSessionId) {
+            const sessionAdminCollection = res.app.locals.db.collection("loginAdminSession");
+            const sessionObj = await sessionAdminCollection.findOne({sPassword: adminSessionId});
+            if (sessionObj) {
+                teacher = true;
+            }
+        }
         let files = [];
         for (const file of req.files) {
             const filetypes = /jpeg|jpg|png|pdf/;
@@ -136,6 +145,7 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
                 files: files
             }
         };
+        if (teacher) boardData["teacher"] = true;
         await boardListCollection.insertOne(boardData);
         res.status(200).json({
             msg: "ボードを新規作成しました。",

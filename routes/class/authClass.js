@@ -24,7 +24,10 @@ router.post('/auth', async function (req, res) {
             if (!sessionClass.includes(classId)) {
                 sessionClass.push(classId);
             }
-            res.cookie("classList", sessionClass.join(","));
+            res.cookie("classList", sessionClass.join(","), {
+                httpOnly: true,
+                maxAge: 60 * 60 * 24 * 7 * 4 // 1 week
+            });
             res.cookie("username", username);
             res.status(200).json({
                 msg: "クラスが見つかりました。名前を登録しました。",
