@@ -1,5 +1,5 @@
 function escapeHTML(string) {
-    return string.replace(/&/g, '&lt;')
+    return String(string).replace(/&/g, '&lt;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')

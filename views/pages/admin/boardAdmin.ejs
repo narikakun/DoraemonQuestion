@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
     <%- include('../../partials/head'); %>
-    <title><%= classId %>の教員用コメント管理パネル | <%= process.env.ServiceName %></title>
-    <script src="/js/commentAdmin.min.js"></script>
+    <title><%= classId %>の教員用管理パネル | <%= process.env.ServiceName %></title>
+    <script src="/js/boardAdmin.min.js"></script>
 </head>
 <body>
 <header>
@@ -14,15 +14,13 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/class/<%= classId %>"><%= classId %></a></li>
             <li class="breadcrumb-item"><a href="/admin/<%= classId %>">管理パネル</a></li>
-            <li class="breadcrumb-item"><a href="/admin/<%= classId %>">ボード管理パネル</a></li>
-            <li class="breadcrumb-item active" aria-current="page">コメント管理パネル</li>
+            <li class="breadcrumb-item active" aria-current="page">ボード管理パネル</li>
         </ol>
     </nav>
-    <h1><%= classId %>の教員用コメント管理パネル</h1>
-    <p>これは教員向けのコメント管理機能です。</p>
+    <h1><%= classId %>の教員用ボード管理パネル</h1>
+    <p>これは教員向けのボード管理機能です。</p>
     <hr class="my-4">
     <p id="errorMsg" style="color: red;"></p>
-    <p>表示ボードID: <span id="boardId"></span></p>
     <div id="cardList" class="mt-3"></div>
     <nav class="mt-3">
         <ul class="pagination justify-content-center">
@@ -47,7 +45,7 @@
             </div>
             <div class="modal-body">
                 <div>
-                    <p class="text-muted">コメントID</p>
+                    <p class="text-muted">ボードID</p>
                     <p class="px-2" id="modalId"></p>
                 </div>
                 <div>
@@ -61,7 +59,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="removeComment()">削除
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="removeBoard()">削除
                 </button>
             </div>
         </div>
@@ -72,7 +70,7 @@
 </footer>
 <script>
     isAdmin('<%= classId %>');
-    getComment("<%= boardId %>");
+    getBoard("<%= classId %>");
 </script>
 </body>
 </html>

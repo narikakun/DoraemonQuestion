@@ -17,10 +17,6 @@
     <hr class="my-4">
     <p id="errorMsg" style="color: red;"></p>
     <div class="mb-3">
-        <label for="titleInput" class="form-label">タイトル</label>
-        <input class="form-control" id="titleInput"></input>
-    </div>
-    <div class="mb-3">
         <label for="contentInput" class="form-label">テキスト内容</label>
         <textarea class="form-control" id="contentInput" rows="3"></textarea>
     </div>
@@ -40,11 +36,22 @@
         </div>
         <div id="fileHelp" class="form-text">png, jpg, pdfが利用できます。最大3つのファイルを選べます。各ファイルは5MBまでアップロードできます。</div>
     </div>
+    <div class="mb-3" id="anonymousDiv" style="display: none;">
+        <label for="anonymousGroup" class="form-label">匿名モード</label>
+        <div class="input-group mb-3" id="anonymousGroup">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="anonymousCheck">
+                <label class="form-check-label" for="anonymousCheck">
+                    これを有効にすると自分の名前を公開せずにボードを投稿できます。<br/>教員は名前を閲覧できます。
+                </label>
+            </div>
+        </div>
+    </div>
     <button type="button" id="createBoardButton" class="btn btn-primary">作成</button>
 </main>
 <footer>
     <%- include('../../partials/footer'); %>
 </footer>
-<script> isAdmin('<%= classId %>'); </script>
+<script> isAdmin('<%= classId %>'); getClass('<%= classId %>'); </script>
 </body>
 </html>

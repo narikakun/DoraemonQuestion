@@ -51,6 +51,9 @@ router.get('/:classId/list', async function (req, res) {
                 const commentCount = await commentListCollection.countDocuments({boardId: String(boardData._id)});
                 boardData.lastComment.commentCount = commentCount;
             }
+            if (boardData.anonymous) {
+                boardData.author = null;
+            }
             boardList.push(boardData);
         }
         res.status(200).json({

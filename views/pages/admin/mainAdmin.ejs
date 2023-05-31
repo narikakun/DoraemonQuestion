@@ -4,6 +4,9 @@
     <%- include('../../partials/head'); %>
     <title><%= classId %>の教員用管理パネル | <%= process.env.ServiceName %></title>
     <script src="/js/mainAdmin.min.js"></script>
+    <script>
+        const classId = "<%= classId %>";
+    </script>
 </head>
 <body>
 <header>
@@ -13,67 +16,38 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/class/<%= classId %>"><%= classId %></a></li>
-            <li class="breadcrumb-item active" aria-current="page">ボード管理パネル</li>
+            <li class="breadcrumb-item active" aria-current="page">管理パネル</li>
         </ol>
     </nav>
-    <h1><%= classId %>の教員用ボード管理パネル</h1>
-    <p>これは教員向けのボード管理機能です。</p>
+    <h1><%= classId %>の教員用管理パネル</h1>
+    <p>これは教員向けの管理機能です。</p>
     <hr class="my-4">
     <p id="errorMsg" style="color: red;"></p>
-    <div id="cardList" class="mt-3"></div>
-    <nav class="mt-3">
-        <ul class="pagination justify-content-center">
-            <li class="page-item" id="paginationBack">
-                <a class="page-link" tabindex="-1">＜</a>
-            </li>
-            <p id="paginationInfo" class="p-2"></p>
-            <li class="page-item" id="paginationNext">
-                <a class="page-link">＞</a>
-            </li>
-        </ul>
-    </nav>
-</main>
-<div class="modal fade" id="deleteCheckModal" tabindex="-1" aria-labelledby="deleteCheckModalLabel">
-    <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteCheckModalLabel">本当に削除しますか？</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <p class="text-muted">ボードID</p>
-                    <p class="px-2" id="modalId"></p>
-                </div>
-                <div>
-                    <p class="text-muted">投稿者名</p>
-                    <p class="px-2" id="modalAuthor"></p>
-                </div>
-                <div>
-                    <p class="text-muted">タイトル</p>
-                    <p class="px-2" id="modalTitle"></p>
-                </div>
-                <div>
-                    <p class="text-muted">内容</p>
-                    <p class="px-2" id="modalContent"></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="removeBoard()">削除
-                </button>
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">移動メニュー</h5>
+            <div class="d-grid gap-2">
+                <a class="btn btn-primary" href="/admin/<%=classId%>/boards">ボード管理パネルに移動</a>
             </div>
         </div>
     </div>
-</div>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">設定</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="anonymousSettingCheck">
+                <label class="form-check-label" for="anonymousSettingCheck">
+                    匿名モード <span id="anonymousStatus">無効</span>
+                </label>
+            </div>
+        </div>
+    </div>
+</main>
 <footer>
     <%- include('../../partials/footer'); %>
 </footer>
 <script>
     isAdmin('<%= classId %>');
-    getBoard("<%= classId %>");
 </script>
 </body>
 </html>

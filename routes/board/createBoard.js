@@ -44,13 +44,6 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             });
             return;
         }
-        const postTitle = req.body.title;
-        if (!postTitle) {
-            res.status(400).json({
-                msg: "タイトルを入力してください。"
-            });
-            return;
-        }
         const postContent = req.body.content;
         if (!postContent && !req.files) {
             res.status(400).json({
@@ -140,11 +133,16 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             updatedAt: new Date().getTime(),
             author: username,
             data: {
-                title: postTitle,
                 content: postContent,
                 files: files
             }
         };
+        const anonymous = req.body.anonymous;
+        if (anonymous) {
+            if (classObj.trueAnonymous) {
+                boardData["anonymous"] = true;
+            }
+        }
         if (teacher) boardData["teacher"] = true;
         await boardListCollection.insertOne(boardData);
         res.status(200).json({

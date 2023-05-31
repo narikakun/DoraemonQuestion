@@ -34,6 +34,9 @@ router.get('/class/:classId/board/:boardId', function (req, res) {
 router.get('/admin/:classId', function (req, res) {
     res.render('pages/admin/mainAdmin', {classId: req.params.classId, username: req.cookies.username});
 });
+router.get('/admin/:classId/boards', function (req, res) {
+    res.render('pages/admin/boardAdmin', {classId: req.params.classId, username: req.cookies.username});
+});
 router.get('/admin/:classId/comment/:boardId', function (req, res) {
     res.render('pages/admin/commentAdmin', {
         classId: req.params.classId,

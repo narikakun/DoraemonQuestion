@@ -14,7 +14,8 @@ router.get('/get/:classId', async function (req, res) {
         res.status(200).json({
             msg: "クラスが見つかりました。",
             classId: classId,
-            className: classObj.className
+            className: classObj.className,
+            trueAnonymous: classObj.trueAnonymous || false
         });
     } catch (err) {
         console.error(err);

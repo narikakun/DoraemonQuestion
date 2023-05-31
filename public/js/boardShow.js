@@ -10,8 +10,7 @@ $(function () {
         .done(async function (data, textStatus, jqXHR) {
             let boardData = data.data;
             let boardObj = boardData.data;
-            $("#authorName").html(`投稿者: ${escapeHTML(boardData.author)}${boardData.teacher?` <span class="badge bg-secondary">教員</span>`: ""}`);
-            $("#postTitle").text(escapeHTML(boardObj.title));
+            $("#authorName").html(`投稿者: ${boardData.anonymous?` <span class="badge bg-secondary">匿名モード</span>`:escapeHTML(boardData.author)}${boardData.teacher?` <span class="badge bg-secondary">教員</span>`: ""}`);
             $("#createdAt").text(new Date(boardData.createdAt).toLocaleString("ja"));
             $("#content").html(boardObj.content ? escapeHTML(boardObj.content).replace(/\r\n/g, '<br />') : "");
             let imgHtml = "";

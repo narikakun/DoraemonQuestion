@@ -73,7 +73,6 @@ async function showBoardList(board) {
     <thead>
         <tr>
             <th scope="col">投稿者名</th>
-            <th scope="col">タイトル</th>
             <th scope="col">内容</th>
             <th scope="col">日付</th>
         </tr>
@@ -84,8 +83,7 @@ async function showBoardList(board) {
         let datum = board[board2[dataKey]];
         boardHtml += `
         <tr id="board_${datum._id}" onclick="window.location.href='/class/${datum.classId}/board/${datum._id}'">
-                <td>${escapeHTML(datum.author)}${datum.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</td>
-                <td>${escapeHTML(datum.data.title || "タイトル無し")}</td>
+                <td>${datum.anonymous?` <span class="badge bg-secondary">匿名モード</span>`:escapeHTML(datum.author)}${datum.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</td>
                 <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
                 <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
         </tr>`;
@@ -101,10 +99,9 @@ async function addBoard(board) {
 <div class="card mb-3 card-link flex-grow-1" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
-            <h6 class="card-subtitle mb-2 text-muted">${escapeHTML(board.author)}${board.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</h6>
+            <h6 class="card-subtitle mb-2 text-muted">${board.anonymous?` <span class="badge bg-secondary">匿名モード</span>`:escapeHTML(board.author)}${board.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</h6>
             <small class="text-muted">${new Date(board.createdAt).toLocaleString("ja")}</small>
         </div>
-        <h5 class="card-title mb-0">${escapeHTML(board.data.title || "タイトル無し")}</h5>
         <hr>
         <p class="card-text">${escapeHTML(truncateString(board.data.content, 70) || "")}</p>
         <div class="row row-cols-3 g-3">`;

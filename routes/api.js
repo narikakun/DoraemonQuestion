@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const bodyParser = require("body-parser");
 
+router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json());
 
 router.use((err, req, res, next) => {
@@ -22,9 +23,10 @@ router.use("/board", require("./board/boardShow"));
 router.use("/comment", require("./comment/commentList"));
 router.use("/comment", require("./comment/commentPost"));
 
-router.use("/ws", require("./websocket/wsConnect"));
-
 router.use("/admin", require("./admin/removeBoard"));
 router.use("/admin", require("./admin/removeComment"));
+router.use("/admin", require("./admin/anonymousSettings"));
+
+router.use("/ws", require("./websocket/wsConnect"));
 
 module.exports = router;

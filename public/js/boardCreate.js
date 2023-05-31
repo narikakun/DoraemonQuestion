@@ -8,13 +8,13 @@ $(function () {
                 fd.append("files", file, encodeURIComponent(`${file.name}`));
             }
         }
-        let title = $("#titleInput").val();
-        if (title) {
-            fd.append("title", title);
-        }
         let content = $("#contentInput").val();
         if (content) {
             fd.append("content", content);
+        }
+        let anonymousCheck = $("#anonymousCheck").prop("checked");
+        if (anonymousCheck) {
+            fd.append("anonymous", "true");
         }
         $.ajax({
             type: "POST",
@@ -44,3 +44,16 @@ $(function () {
         $("#inputFile03").val("");
     })
 });
+function getClass (classId) {
+    $.ajax({
+        type: "GET",
+        url: "/api/class/get/" + classId,
+        contentType: 'application/json',
+        dataType: "json"
+    })
+        .done(function (data, textStatus, jqXHR) {
+            if (data.trueAnonymous) {
+                $(`#anonymousDiv`).attr("style", "display: block;");
+            }
+        })
+}

@@ -13,6 +13,9 @@ router.get('/:classId/board/:boardId', async function (req, res) {
             });
             return;
         }
+        if (boardObj.anonymous) {
+            boardObj.author = null;
+        }
         res.status(200).json({
             msg: "取得しました。",
             classId: classId,
