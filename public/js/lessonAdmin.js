@@ -77,7 +77,7 @@ async function showLessonList(lesson) {
                 <td>${escapeHTML(truncateString(datum.name, 30) || "")}</td>
                 <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
                 <td>
-                    <button type="button" target="_blank" onclick="showRemoveModal('${datum.classId}', '${datum._id}', '${escapeHTML(datum.name)}')" class="btn btn-danger btn-sm">レッスンを削除</button>
+                    <button type="button" target="_blank" onclick="showRemoveModal('${datum.classId}', '${datum._id}', '${escapeHTML(datum.name)}')" class="btn btn-danger btn-sm" disabled>レッスンを削除</button>
                 </td>
         </tr>`;
     }
