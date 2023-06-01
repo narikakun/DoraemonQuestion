@@ -2,8 +2,8 @@
 <html lang="ja">
 <head>
     <%- include('../../partials/head'); %>
-    <title><%= classId %>の教員用ボード管理パネル | <%= process.env.ServiceName %></title>
-    <script src="/js/boardAdmin.min.js"></script>
+    <title><%= classId %>の教員用レッスン管理パネル | <%= process.env.ServiceName %></title>
+    <script src="/js/lessonAdmin.min.js"></script>
 </head>
 <body>
 <header>
@@ -14,13 +14,14 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/class/<%= classId %>"><%= classId %></a></li>
             <li class="breadcrumb-item"><a href="/admin/<%= classId %>">管理パネル</a></li>
-            <li class="breadcrumb-item active" aria-current="page">ボード管理パネル</li>
+            <li class="breadcrumb-item active" aria-current="page">レッスン管理パネル</li>
         </ol>
     </nav>
-    <h1><%= classId %>の教員用ボード管理パネル</h1>
-    <p>これは教員向けのボード管理機能です。</p>
+    <h1><%= classId %>の教員用レッスン管理パネル</h1>
+    <p>これは教員向けのレッスン管理機能です。</p>
     <hr class="my-4">
     <p id="errorMsg" style="color: red;"></p>
+    <a class="btn btn-primary w-100" href="/admin/<%= classId %>/createLesson">レッスンを新規作成</a>
     <div id="cardList" class="mt-3"></div>
     <nav class="mt-3">
         <ul class="pagination justify-content-center">
@@ -45,21 +46,17 @@
             </div>
             <div class="modal-body">
                 <div>
-                    <p class="text-muted">ボードID</p>
-                    <p class="px-2" id="modalId"></p>
+                    <p class="text-muted">レッスンID</p>
+                    <p class="px-2" id="modalLessonId"></p>
                 </div>
                 <div>
-                    <p class="text-muted">投稿者名</p>
-                    <p class="px-2" id="modalAuthor"></p>
-                </div>
-                <div>
-                    <p class="text-muted">内容</p>
-                    <p class="px-2" id="modalContent"></p>
+                    <p class="text-muted">レッスン名</p>
+                    <p class="px-2" id="modalLessonName"></p>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="removeBoard()">削除
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="removeLesson()">削除
                 </button>
             </div>
         </div>
@@ -70,7 +67,7 @@
 </footer>
 <script>
     isAdmin('<%= classId %>');
-    getBoard("<%= classId %>");
+    getLesson("<%= classId %>");
 </script>
 </body>
 </html>

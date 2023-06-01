@@ -26,6 +26,8 @@ router.use("/comment", require("./comment/commentPost"));
 router.use("/admin", require("./admin/removeBoard"));
 router.use("/admin", require("./admin/removeComment"));
 router.use("/admin", require("./admin/anonymousSettings"));
+router.use("/admin", require("./admin/classLesson"));
+router.use("/admin", require("./admin/createLesson"));
 
 router.use("/ws", require("./websocket/wsConnect"));
 
