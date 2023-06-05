@@ -25,6 +25,7 @@ const upload = multer({
 })
 
 const pdfToPng = require("pdf-to-png-converter");
+const {ObjectId} = require("mongodb");
 
 router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], async function (req, res) {
     try {
@@ -142,6 +143,18 @@ router.post('/:classId/create', [upload.array("files", 3), multerErrorHandler], 
             if (classObj.trueAnonymous) {
                 boardData["anonymous"] = true;
             }
+        }
+        const lesson = req.body.lesson;
+        if (lesson) {
+            const lessonListCollection = res.app.locals.db.collection("lessonList");
+            const lessonObj = await lessonListCollection.findOne({classId: classObj.classId, _id: new ObjectId(lesson)});
+            if (!lessonObj) {
+                res.status(404).json({
+                    msg: "授業カテゴリが見つかりません。"
+                });
+                return;
+            }
+            boardData["lesson"] = lessonObj._id;
         }
         if (teacher) boardData["teacher"] = true;
         await boardListCollection.insertOne(boardData);

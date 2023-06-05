@@ -1,5 +1,6 @@
 let nowData = null;
 let showListMode = false;
+let lessonFilter = null;
 
 function getBoard(classId, pageNum = 1) {
     $("#cardList").html(" ");
@@ -13,7 +14,10 @@ function getBoard(classId, pageNum = 1) {
         type: "GET",
         url: `/api/board/${classId}/list?page=${pageNum}`,
         contentType: 'application/json',
-        dataType: "json"
+        dataType: "json",
+        data: {
+            lesson: lessonFilter
+        }
     })
         .done(async function (data, textStatus, jqXHR) {
             data.boards.reverse();
@@ -72,6 +76,7 @@ async function showBoardList(board) {
     boardHtml += `<table class="table table-hover">
     <thead>
         <tr>
+            <th scope="col">授業カテゴリ</th>
             <th scope="col">投稿者名</th>
             <th scope="col">内容</th>
             <th scope="col">日付</th>
@@ -83,9 +88,10 @@ async function showBoardList(board) {
         let datum = board[board2[dataKey]];
         boardHtml += `
         <tr id="board_${datum._id}" onclick="window.location.href='/class/${datum.classId}/board/${datum._id}'">
-                <td>${datum.anonymous?` <span class="badge bg-secondary">匿名モード</span>`:escapeHTML(datum.author)}${datum.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</td>
-                <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
-                <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
+            <td>${datum.lessonName || ""}</td>
+            <td>${datum.anonymous?` <span class="badge bg-secondary">匿名</span>`:escapeHTML(datum.author)}${datum.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</td>
+            <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
+            <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
         </tr>`;
     }
     boardHtml += `</tbody></table>`;
@@ -99,8 +105,11 @@ async function addBoard(board) {
 <div class="card mb-3 card-link flex-grow-1" onclick="window.location.href='/class/${board.classId}/board/${board._id}'">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
-            <h6 class="card-subtitle mb-2 text-muted">${board.anonymous?` <span class="badge bg-secondary">匿名モード</span>`:escapeHTML(board.author)}${board.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</h6>
-            <small class="text-muted">${new Date(board.createdAt).toLocaleString("ja")}</small>
+            <h6 class="card-subtitle mb-2 text-muted">${board.anonymous?` <span class="badge bg-secondary">匿名</span>`:escapeHTML(board.author)}${board.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</h6>
+            <div class="text-end">
+                ${board.lesson?`<span class="badge rounded-pill bg-light text-dark">${board.lessonName}</span>`:""}
+                <small class="text-muted">${new Date(board.createdAt).toLocaleString("ja")}</small>
+            </div>
         </div>
         <hr>
         <p class="card-text">${escapeHTML(truncateString(board.data.content, 70) || "")}</p>
@@ -145,7 +154,38 @@ $(function () {
         let pageNumber = nowData.pageNumber + 1;
         getBoard(nowData.classId, pageNumber);
     })
+    $("#lessonSelect").change(function (event) {
+        let selectIfLesson = $(this).val();
+        if (selectIfLesson != 'null') {
+            lessonFilter = selectIfLesson;
+        } else {
+            lessonFilter = null;
+        }
+        getBoard(nowData.classId, nowData.pageNumber);
+    });
+    $.ajax({
+        type: "GET",
+        url: "/api/class/get/" + classId,
+        contentType: 'application/json',
+        dataType: "json"
+    })
+        .done(function (data, textStatus, jqXHR) {
+            if (data.lessonList[0]) {
+                $(`#lessonSelect`).html(`<option value="null" selected>すべて（条件無し）</option>`);
+                for (const lessonKey in data.lessonList) {
+                    $(`#lessonSelect`).html($(`#lessonSelect`).html() + `<option value="${data.lessonList[lessonKey]._id}">${data.lessonList[lessonKey].name}</option>`);
+                }
+            }
+        });
 });
+
+function ifBoxGoGo () {
+    if ($("#ifBox").css('display') == 'none') {
+       $("#ifBox").show();
+    } else {
+        $("#ifBox").hide();
+    }
+}
 
 async function connectWebSocket(classId) {
     let connection = new WebSocket(`${wsUrl}/ws/connect/${classId}`);

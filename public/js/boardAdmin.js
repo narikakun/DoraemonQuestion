@@ -5,7 +5,7 @@ function getBoard(classId, pageNum = 1) {
     $("#cardList").hide();
     $.ajax({
         type: "GET",
-        url: `/api/board/${classId}/list?page=${pageNum}`,
+        url: `/api/board/${classId}/list?page=${pageNum}&teacher=true`,
         contentType: 'application/json',
         dataType: "json"
     })
@@ -63,6 +63,7 @@ async function showBoardList(board) {
     boardHtml += `<table class="table">
     <thead>
         <tr>
+            <th scope="col">授業カテゴリ</th>
             <th scope="col">投稿者名</th>
             <th scope="col">内容</th>
             <th scope="col">ファイル数</th>
@@ -77,16 +78,17 @@ async function showBoardList(board) {
         let datum = board[board2[dataKey]];
         boardHtml += `
         <tr id="board_${datum._id}">
-                <td>${escapeHTML(datum.author)}${datum.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</td>
-                <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
-                <td>${datum.data.files.length}</td>
-                <td>${datum.lastComment?.commentCount || 0}</td>
-                <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
-                <td>
-                    <a target="_blank" href="/class/${datum.classId}/board/${datum._id}" class="btn btn-info btn-sm">表示</a>
-                    <a href="/admin/${datum.classId}/comment/${datum._id}" class="btn btn-secondary btn-sm">コメント管理</a>
-                    <button type="button" target="_blank" onclick="showRemoveModal('${datum.classId}', '${datum._id}', '${escapeHTML(datum.author)}', '${escapeHTML(truncateString(datum.data.content, 30) || "")}')" class="btn btn-danger btn-sm">削除</button>
-                </td>
+            <td>${datum.lessonName || ""}</td>
+            <td>${escapeHTML(datum.author)}${datum.anonymous?` <span class="badge bg-secondary">匿名</span>`:""}${datum.teacher?` <span class="badge bg-secondary">教員</span>`: ""}</td>
+            <td>${escapeHTML(truncateString(datum.data.content, 30) || "")}</td>
+            <td>${datum.data.files.length}</td>
+            <td>${datum.lastComment?.commentCount || 0}</td>
+            <td>${new Date(datum.createdAt).toLocaleString("ja")}</td>
+            <td>
+                <a target="_blank" href="/class/${datum.classId}/board/${datum._id}" class="btn btn-info btn-sm">表示</a>
+                <a href="/admin/${datum.classId}/comment/${datum._id}" class="btn btn-secondary btn-sm">コメント管理</a>
+                <button type="button" target="_blank" onclick="showRemoveModal('${datum.classId}', '${datum._id}', '${escapeHTML(datum.author)}', '${escapeHTML(truncateString(datum.data.content, 30) || "")}')" class="btn btn-danger btn-sm">削除</button>
+            </td>
         </tr>`;
     }
     boardHtml += `</tbody></table>`;

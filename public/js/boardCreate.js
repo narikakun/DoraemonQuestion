@@ -16,6 +16,10 @@ $(function () {
         if (anonymousCheck) {
             fd.append("anonymous", "true");
         }
+        let lesson = $("#lessonSelect").val();
+        if (lesson) {
+            fd.append("lesson", lesson);
+        }
         $.ajax({
             type: "POST",
             url: `/api/board/${classId}/create`,
@@ -54,6 +58,13 @@ function getClass (classId) {
         .done(function (data, textStatus, jqXHR) {
             if (data.trueAnonymous) {
                 $(`#anonymousDiv`).attr("style", "display: block;");
+            }
+            if (data.lessonList[0]) {
+                $(`#lessonDiv`).attr("style", "display: block;");
+                $(`#lessonSelect`).html("");
+                for (const lessonKey in data.lessonList) {
+                    $(`#lessonSelect`).html($(`#lessonSelect`).html() + `<option value="${data.lessonList[lessonKey]._id}"${lessonKey==0?" selected":""}>${data.lessonList[lessonKey].name}</option>`);
+                }
             }
         })
 }

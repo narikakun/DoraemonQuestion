@@ -4,6 +4,9 @@
     <%- include('../../partials/head'); %>
     <title><%= classId %>のボード | <%= process.env.ServiceName %></title>
     <script src="/js/boardList.min.js"></script>
+    <script>
+        const classId = "<%= classId %>";
+    </script>
 </head>
 <body>
 <header>
@@ -14,6 +17,9 @@
         <h1>ボード画面</h1>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="ifBoxButton"
+                        onclick="ifBoxGoGo()">条件検索
+                </button>
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="modeChangeButton"
                         onclick="modeChange()">リスト切り替え
                 </button>
@@ -22,6 +28,15 @@
     </div>
     <hr class="my-4">
     <p id="errorMsg" style="color: red;"></p>
+    <div class="card mb-3" id="ifBox" style="display: none;">
+        <div class="card-body">
+            <h5 class="card-title">条件指定</h5>
+            <label for="lessonSelect" class="form-label">授業カテゴリ</label>
+            <select class="form-select" id="lessonSelect">
+                <option selected>すべて（条件無し）</option>
+            </select>
+        </div>
+    </div>
     <a class="btn btn-primary w-100" href="/class/<%= classId %>/create">ボートに新規投稿</a>
     <div id="cardList" class="mt-3"></div>
     <nav class="mt-3">

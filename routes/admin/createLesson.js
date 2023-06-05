@@ -14,7 +14,7 @@ router.post('/:classId/createLesson', async function (req, res) {
         const lessonName = req.body.lessonName;
         if (!lessonName) {
             res.status(400).json({
-                msg: "レッスン名を入力してください。"
+                msg: "授業カテゴリ名を入力してください。"
             });
             return;
         }
@@ -48,7 +48,7 @@ router.post('/:classId/createLesson', async function (req, res) {
         };
         await lessonListCollection.insertOne(lessonData);
         res.status(200).json({
-            msg: "レッスンを新規作成しました。",
+            msg: "授業カテゴリを新規作成しました。",
             data: lessonData
         });
         if (req.app.locals.wsList[classId]) {

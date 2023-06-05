@@ -11,11 +11,19 @@ router.get('/get/:classId', async function (req, res) {
             });
             return;
         }
+        let onePagePer = 20;
+        const lessonListCollection = res.app.locals.db.collection("lessonList");
+        const lessonListFind = await lessonListCollection.find({classId: classObj.classId}, {limit: onePagePer}).sort({createdAt: -1}).toArray();
+        let lessonList = [];
+        for (const lessonKey in lessonListFind) {
+            lessonList.push(lessonListFind[lessonKey]);
+        }
         res.status(200).json({
             msg: "クラスが見つかりました。",
             classId: classId,
             className: classObj.className,
-            trueAnonymous: classObj.trueAnonymous || false
+            trueAnonymous: classObj.trueAnonymous || false,
+            lessonList: lessonList
         });
     } catch (err) {
         console.error(err);

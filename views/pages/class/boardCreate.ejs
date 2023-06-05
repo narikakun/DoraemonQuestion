@@ -16,6 +16,12 @@
     <h1>ボード新規作成</h1>
     <hr class="my-4">
     <p id="errorMsg" style="color: red;"></p>
+    <div class="mb-3" id="lessonDiv" style="display: none;">
+        <label for="lessonSelect" class="form-label">授業カテゴリ</label>
+        <select class="form-select" id="lessonSelect">
+            <option selected>無し</option>
+        </select>
+    </div>
     <div class="mb-3">
         <label for="contentInput" class="form-label">テキスト内容</label>
         <textarea class="form-control" id="contentInput" rows="3"></textarea>

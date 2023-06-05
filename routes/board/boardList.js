@@ -1,3 +1,4 @@
+const {ObjectId} = require("mongodb");
 const router = require("express").Router();
 
 router.get('/:classId/list', async function (req, res) {
@@ -12,9 +13,6 @@ router.get('/:classId/list', async function (req, res) {
             return;
         }
         let onePagePer = 9;
-
-        const boardListCollection = res.app.locals.db.collection("boardList");
-        const classBoardCollection = await boardListCollection.findOne({classId: classId});
         let pageNumber = Number(req.query.page) || 1;
         if (pageNumber < 1) {
             res.status(400).json({
@@ -22,6 +20,15 @@ router.get('/:classId/list', async function (req, res) {
             });
             return;
         }
+        let lessonFilter = req.query.lesson;
+        let filterSql = {$and: [{classId: classObj.classId}]};
+        if (lessonFilter) {
+            filterSql["$and"].push({lesson: new ObjectId(lessonFilter)});
+        }
+        console.log(filterSql);
+        const boardListCollection = res.app.locals.db.collection("boardList");
+        const classBoardCollection = await boardListCollection.findOne(filterSql);
+        console.log(classBoardCollection);
         if (!classBoardCollection) {
             res.status(200).json({
                 msg: "取得しました。",
@@ -34,15 +41,28 @@ router.get('/:classId/list', async function (req, res) {
             });
             return;
         }
-        const boardCount = await boardListCollection.countDocuments({classId: classId});
+        const boardCount = await boardListCollection.countDocuments(filterSql);
         let boardList = [];
 
-        let boardFind = await boardListCollection.find({classId: classId}, {
+        let boardFind = await boardListCollection.find(filterSql, {
             limit: onePagePer,
             skip: ((pageNumber - 1) * onePagePer)
         }).sort({createdAt: -1}).toArray();
 
+        const lessonListCollection = res.app.locals.db.collection("lessonList");
+        const lessonListFind = await lessonListCollection.find({classId: classObj.classId}).toArray();
         const commentListCollection = res.app.locals.db.collection("commentList");
+        let teacherMode = false;
+        if (req.query.teacher) {
+            let adminSessionId = req.cookies[`adminSession_${classObj.classId}`];
+            if (adminSessionId) {
+                const sessionAdminCollection = res.app.locals.db.collection("loginAdminSession");
+                const sessionObj = await sessionAdminCollection.findOne({sPassword: adminSessionId});
+                if (sessionObj) {
+                    teacherMode = true;
+                }
+            }
+        }
         for (const boardKey in boardFind) {
             let boardData = boardFind[boardKey];
             const commentFind = await commentListCollection.find({boardId: String(boardData._id)}, {limit: 1}).sort({createdAt: -1}).toArray();
@@ -51,8 +71,12 @@ router.get('/:classId/list', async function (req, res) {
                 const commentCount = await commentListCollection.countDocuments({boardId: String(boardData._id)});
                 boardData.lastComment.commentCount = commentCount;
             }
-            if (boardData.anonymous) {
+            if (boardData.anonymous && !teacherMode) {
                 boardData.author = null;
+            }
+            if (boardData.lesson) {
+                let lessonFilter = lessonListFind.find(f => String(f._id) == boardData.lesson);
+                boardData.lessonName = lessonFilter?.name || "不明な授業カテゴリ";
             }
             boardList.push(boardData);
         }

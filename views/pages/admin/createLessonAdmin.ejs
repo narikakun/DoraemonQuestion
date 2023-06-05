@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <%- include('../../partials/head'); %>
-    <title><%= classId %>の教員用レッスン作成画面 | <%= process.env.ServiceName %></title>
+    <title><%= classId %>の教員用授業カテゴリ作成画面 | <%= process.env.ServiceName %></title>
     <script src="/js/lessonCreateAdmin.min.js"></script>
     <script>
         const classId = "<%= classId %>";
@@ -17,20 +17,20 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/class/<%= classId %>"><%= classId %></a></li>
             <li class="breadcrumb-item"><a href="/admin/<%= classId %>">管理パネル</a></li>
-            <li class="breadcrumb-item"><a href="/admin/<%= classId %>/lesson">レッスン管理パネル</a></li>
-            <li class="breadcrumb-item active" aria-current="page">レッスン作成画面</li>
+            <li class="breadcrumb-item"><a href="/admin/<%= classId %>/lesson">授業カテゴリ管理パネル</a></li>
+            <li class="breadcrumb-item active" aria-current="page">授業カテゴリ作成画面</li>
         </ol>
     </nav>
-    <h1><%= classId %>の教員用レッスン作成画面</h1>
-    <p>これは教員向けのレッスン作成画面です。</p>
+    <h1><%= classId %>の教員用授業カテゴリ作成画面</h1>
+    <p>これは教員向けの授業カテゴリ作成画面です。</p>
     <hr class="my-4">
     <p id="errorMsg" style="color: red;"></p>
     <div class="mb-3">
         <label for="classId" class="form-label">レッスン名</label>
-        <input type="text" class="form-control" id="lessonName" placeholder="レッスン名" aria-describedby="lessonNameHelp"
-               required>
+        <% const nowData = new Date(); %>
+        <input type="text" class="form-control" id="lessonName" placeholder="授業カテゴリ名" aria-describedby="lessonNameHelp" value="<%=nowData.getFullYear()%>年<%=nowData.getMonth()+1%>月<%=nowData.getDate()%>日の授業" required>
         <div class="invalid-feedback">
-            レッスン名の指定は必須です。
+            授業カテゴリ名の指定は必須です。
         </div>
     </div>
     <button type="button" id="createLessonButton" class="btn btn-primary">作成</button>
